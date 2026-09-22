@@ -224,6 +224,9 @@ function start() {
   const eventGroup=new THREE.Group(); terrainGroup.add(eventGroup);
   const landmarks=createLandmarks(atlasEntries,elevation);
   scene.add(landmarks.root);
+  window.__landmarks=landmarks;
+  window.__camera=camera;
+  window.__controls=controls;
   $('#cinematic-mode').checked=false;
   const qualityStatus=$('#quality-status');
   function syncQuality(){
@@ -236,6 +239,54 @@ function start() {
   const hitObjects=[];
   const labels=[];
   const labelLayer=$('#map-labels');
+  let labelPress = null;
+  let labelDragged = false;
+
+  labelLayer.addEventListener('wheel', e => {
+    e.preventDefault();
+    renderer.domElement.dispatchEvent(new WheelEvent('wheel', {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      screenX: e.screenX,
+      screenY: e.screenY,
+      deltaX: e.deltaX,
+      deltaY: e.deltaY,
+      deltaZ: e.deltaZ,
+      deltaMode: e.deltaMode,
+      bubbles: true,
+      cancelable: true
+    }));
+  }, { passive: false });
+
+  labelLayer.addEventListener('pointerdown', e => {
+    const btn = e.target.closest('.place-label, .event-label, .region-label');
+    if (!btn) return;
+    labelPress = [e.clientX, e.clientY];
+    labelDragged = false;
+    renderer.domElement.dispatchEvent(new PointerEvent('pointerdown', {
+      pointerId: e.pointerId || 1,
+      pointerType: e.pointerType || 'mouse',
+      clientX: e.clientX,
+      clientY: e.clientY,
+      screenX: e.screenX,
+      screenY: e.screenY,
+      button: e.button,
+      buttons: e.buttons,
+      bubbles: true,
+      cancelable: true
+    }));
+  });
+
+  window.addEventListener('pointermove', e => {
+    if (labelPress && Math.hypot(e.clientX - labelPress[0], e.clientY - labelPress[1]) > 5) {
+      labelDragged = true;
+    }
+  });
+
+  window.addEventListener('pointerup', () => {
+    setTimeout(() => { labelPress = null; labelDragged = false; }, 60);
+  });
+
   function addLabel(data,isEvent=false) {
     const button=document.createElement('button');
     button.className=`place-label${isEvent?' event-label':''}${data.area?' area-label':''}${data.type==='River'||data.type==='Lake'?' water-label':''}${data.level?' local-label':''}`;
@@ -244,7 +295,14 @@ function start() {
     button.textContent=isEvent?'✦':data.name;
     button.title=isEvent?`${data.name} · ${data.date}`:data.name;
     button.setAttribute('aria-label',isEvent?button.title:`Explore ${data.name}`);
-    button.onclick=()=>openLore(data,button);
+    button.onclick=(e)=>{
+      if (labelDragged) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      openLore(data,button);
+    };
     labelLayer.append(button);
     labels.push({button,data,isEvent,height:Math.max(0,elevation(data.x,data.z))+.19});
   }
@@ -420,6 +478,8 @@ function start() {
     if(highlight) setHighlight(place);
     invalidate();
   };
+  window.__focusPlace=focusPlace;
+  window.__invalidate=invalidate;
 
   // Fullscreen Application Toggle
   const fullscreenBtn=$('#fullscreen-toggle');
