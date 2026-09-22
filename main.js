@@ -257,20 +257,29 @@ function start() {
     labelLayer.append(button);
     labels.push({button,data,isEvent,height:Math.max(0,elevation(data.x,data.z))+.19});
   }
+  const landmarkIdSet=new Set(landmarks.records.map(r=>r.data.id));
+  const pinMeshes=[];
+  const eventMeshes=[];
   const pinGeometry=new THREE.SphereGeometry(.067,8,6), pinMaterial=new THREE.MeshBasicMaterial({color:0xffe8ad});
   for(const location of [...locations,...localPlaces]) {
+    addLabel(location);
+    if(landmarkIdSet.has(location.id)) continue;
     const marker=new THREE.Mesh(pinGeometry,pinMaterial);
     marker.position.copy(point(location.x,location.z,.13));
     marker.userData.entry=location;
-    if(landmarks.records.some(record=>record.data.id===location.id))marker.visible=false;
-    terrainGroup.add(marker); hitObjects.push(marker); addLabel(location);
-    if(location.level)detailMeshes.push({mesh:marker,level:location.level});
+    terrainGroup.add(marker);
+    hitObjects.push(marker);
+    pinMeshes.push({mesh:marker,level:location.level||0,pos:marker.position});
   }
   const eventGeometry=new THREE.OctahedronGeometry(.09),eventMaterial=new THREE.MeshBasicMaterial({color:0xeadca6});
   for(const event of events) {
     const marker=new THREE.Mesh(eventGeometry,eventMaterial);
-    marker.position.copy(point(event.x,event.z,.17)); marker.userData.entry=event;
-    eventGroup.add(marker); hitObjects.push(marker); addLabel(event,true);
+    marker.position.copy(point(event.x,event.z,.17));
+    marker.userData.entry=event;
+    eventGroup.add(marker);
+    hitObjects.push(marker);
+    addLabel(event,true);
+    eventMeshes.push(marker);
   }
   for(const data of [...localAreas,...rivers,...lakes])addLabel(data);
   for(const [name,x,z] of regions) {
@@ -729,8 +738,20 @@ function start() {
     const pixelsPerUnit=height/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.position.distanceTo(controls.target));
     const level=$('#map-details').checked?detailLevel(pixelsPerUnit):0;
     $('#detail-status').textContent=level===2?'LOCAL DETAIL · streams & landmarks':level===1?'REGIONAL DETAIL · districts & tributaries':'OVERVIEW · zoom in for regional detail';
+    const camDist=camera.position.distanceTo(controls.target);
+    const isZoomedIn=camDist<16;
     for(const item of detailMeshes)item.mesh.visible=item.level===0||item.level<=level;
+    for(const item of pinMeshes) {
+      const close=isZoomedIn||camera.position.distanceTo(item.pos)<14;
+      item.mesh.visible=!close&&(item.level===0||item.level<=level);
+    }
+    for(const m of eventMeshes) {
+      const close=isZoomedIn||camera.position.distanceTo(m.position)<14;
+      m.visible=!close&&eventGroup.visible;
+    }
     if(highlightGroup.visible) {
+      const close=isZoomedIn||camera.position.distanceTo(highlightGroup.position)<14;
+      pillar.visible=!close;
       const t=performance.now()/1000;
       const pulse=(t*1.4)%1;
       pulseRing.scale.setScalar(1+pulse*3.5);
