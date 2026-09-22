@@ -10,7 +10,9 @@ const $ = selector => document.querySelector(selector);
 const mapElement = $('#map');
 const panel = $('#lore-panel');
 let lastSelection;
+let closeSearchDropdown = () => false;
 function openLore(data, origin = document.activeElement) {
+  closeSearchDropdown();
   lastSelection = origin;
   $('#lore-type').textContent = data.type;
   $('#lore-name').textContent = data.name;
@@ -38,7 +40,12 @@ function closeLore() {
   if (lastSelection?.isConnected) lastSelection.focus({preventScroll:true});
 }
 $('#close-lore').onclick = closeLore;
-document.addEventListener('keydown', event => { if(event.key === 'Escape') closeLore(); });
+window.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    if (closeSearchDropdown()) return;
+    closeLore();
+  }
+});
 $('#location-count').textContent = atlasEntries.length;
 let focusPlace = () => {};
 function populateIndex() {
@@ -74,6 +81,8 @@ function start() {
   renderer.domElement.setAttribute('aria-label','Middle-earth relief map. Use the place index to select locations with a keyboard.');
   mapElement.append(renderer.domElement);
   const controls = new OrbitControls(camera,renderer.domElement);
+  controls.addEventListener('start', () => { closeSearchDropdown(); });
+  mapElement.addEventListener('wheel', () => { closeSearchDropdown(); }, { passive: true });
   controls.enableDamping = !matchMedia('(prefers-reduced-motion: reduce)').matches;
   controls.minDistance = 2.8;
   controls.maxDistance = 42;
@@ -317,7 +326,10 @@ function start() {
 
   const raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2();
   let press;
-  renderer.domElement.addEventListener('pointerdown',e=> {press=[e.clientX,e.clientY];});
+  renderer.domElement.addEventListener('pointerdown',e=> {
+    press=[e.clientX,e.clientY];
+    closeSearchDropdown();
+  });
   renderer.domElement.addEventListener('pointerup',e=> {
     if(!press || Math.hypot(e.clientX-press[0],e.clientY-press[1])>5) return;
     const bounds=renderer.domElement.getBoundingClientRect();
@@ -455,7 +467,20 @@ function start() {
   const mapSearchInput=$('#map-search-input');
   const mapSearchClear=$('#map-search-clear');
   const mapSearchDropdown=$('#map-search-dropdown');
+  const mapSearchContainer=document.querySelector('.map-search');
   const allSearchItems=[...atlasEntries,...events];
+
+  closeSearchDropdown = () => {
+    if(mapSearchDropdown && !mapSearchDropdown.hidden) {
+      mapSearchDropdown.hidden=true;
+      selectedDropdownIndex=-1;
+      if(document.activeElement === mapSearchInput) {
+        mapSearchInput.blur();
+      }
+      return true;
+    }
+    return false;
+  };
 
   function searchPlaces(rawQuery) {
     const normalize=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase();
@@ -512,8 +537,7 @@ function start() {
   function selectSearchPlace(place) {
     if(mapSearchInput) mapSearchInput.value=place.name;
     if(mapSearchClear) mapSearchClear.hidden=false;
-    if(mapSearchDropdown) mapSearchDropdown.hidden=true;
-    selectedDropdownIndex=-1;
+    closeSearchDropdown();
     focusPlace(place,true);
     openLore(place,mapSearchInput);
   }
@@ -523,14 +547,37 @@ function start() {
       const q=mapSearchInput.value.trim();
       if(mapSearchClear) mapSearchClear.hidden=!q;
       if(!q) {
-        if(mapSearchDropdown) mapSearchDropdown.hidden=true;
+        closeSearchDropdown();
         return;
       }
       const matches=searchPlaces(q);
       renderMapSearchResults(matches);
     });
+
+    mapSearchInput.addEventListener('focus',()=>{
+      const q=mapSearchInput.value.trim();
+      if(q) {
+        const matches=searchPlaces(q);
+        renderMapSearchResults(matches);
+      }
+    });
+
     mapSearchInput.addEventListener('keydown',e=>{
-      if(!mapSearchDropdown||mapSearchDropdown.hidden) return;
+      if(e.key==='Escape') {
+        e.preventDefault();
+        closeSearchDropdown();
+        return;
+      }
+      if(!mapSearchDropdown||mapSearchDropdown.hidden) {
+        if(e.key==='ArrowDown'||e.key==='Enter') {
+          const q=mapSearchInput.value.trim();
+          if(q) {
+            const matches=searchPlaces(q);
+            renderMapSearchResults(matches);
+          }
+        }
+        return;
+      }
       const items=mapSearchDropdown.querySelectorAll('.map-search-item');
       if(e.key==='ArrowDown') {
         e.preventDefault();
@@ -552,24 +599,29 @@ function start() {
           const matches=searchPlaces(mapSearchInput.value);
           if(matches.length) selectSearchPlace(matches[0]);
         }
-      } else if(e.key==='Escape') {
-        mapSearchDropdown.hidden=true;
-        selectedDropdownIndex=-1;
       }
     });
+
     if(mapSearchClear) {
       mapSearchClear.onclick=()=>{
         mapSearchInput.value='';
         mapSearchClear.hidden=true;
-        if(mapSearchDropdown) mapSearchDropdown.hidden=true;
-        selectedDropdownIndex=-1;
+        closeSearchDropdown();
         mapSearchInput.focus();
       };
     }
-    document.addEventListener('click',e=>{
+
+    if(mapSearchContainer) {
+      mapSearchContainer.addEventListener('focusout',e=>{
+        if(!mapSearchContainer.contains(e.relatedTarget)) {
+          closeSearchDropdown();
+        }
+      });
+    }
+
+    document.addEventListener('pointerdown',e=>{
       if(!e.target.closest('.map-search')) {
-        if(mapSearchDropdown) mapSearchDropdown.hidden=true;
-        selectedDropdownIndex=-1;
+        closeSearchDropdown();
       }
     });
   }

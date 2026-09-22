@@ -30,6 +30,31 @@ export const localPlaces=[
   entry('carrock','Carrock',.4,-3.62,'River rock','Rhovanion · Anduin','A great rock in the Anduin near Beorn’s lands. The Eagles brought Bilbo and the dwarves here.','Carrock',2),
   entry('dol-guldur','Dol Guldur',2.0,-.46,'Fortress','Southern Mirkwood','Sauron occupied this stronghold as the Necromancer before openly returning to Mordor.'),
   entry('gladden-fields','Gladden Fields',.68,-1.72,'Wetlands','Rhovanion · Anduin','Isildur was ambushed in this region after the Last Alliance. The Ring was lost in the Anduin nearby.'),
+  entry('annuminas','Annúminas',-6.4,-4.0,'Ancient city','Arnor · Lake Evendim','The first capital of Arnor, founded by Elendil on the shores of Lake Evendim. Restored by King Elessar.','Annúminas',0),
+  entry('fornost','Fornost',-5.1,-3.8,'Ruined city','Arthedain · North Downs','The Norbury of the Kings became the second capital of Arnor until the Witch-king captured it in Third Age 1974.','Fornost',1),
+  entry('barrow-downs','Barrow-downs',-5.05,-2.15,'Ancient barrows','Tyrn Gorthad · Eriador','Mounds of ancient kings haunted by Barrow-wights. Tom Bombadil rescued the hobbits, who took blades of Westernesse.','Barrow-downs',1),
+  entry('michel-delving','Michel Delving',-7.2,-2.55,'Town','The Shire · White Downs','The chief town of the Shire, seat of the Mayor and home to the Mathom-house where old curiosities were kept.','Michel_Delving',1),
+  entry('crickhollow','Crickhollow',-5.65,-2.12,'Hobbit dwelling','Buckland · The Shire','The quiet house Frodo bought to conceal his departure from the Shire. Fredegar Bolger stayed behind to keep up appearances.','Crickhollow',2),
+  entry('carn-dum','Carn Dûm',-1.6,-5.8,'Fortress','Angmar · Mountains of Angmar','The chief fortress of the Witch-king of Angmar, who led the long wars that destroyed the kingdoms of Arnor.','Carn_Dûm',0),
+  entry('gundabad','Mount Gundabad',-.9,-5.35,'Sacred peak & fortress','Northern Misty Mountains','Sacred to the Dwarves as the awakening place of Durin the Deathless, later occupied as a major goblin stronghold.','Mount_Gundabad',0),
+  entry('rhosgobel','Rhosgobel',1.15,-1.95,'Wizard’s dwelling','Southern Greenwood · Anduin Vale','The home of Radagast the Brown, who dwelt among the beasts and birds near the western eaves of Mirkwood.','Rhosgobel',1),
+  entry('dimrill-dale','Dimrill Dale',-.65,-.45,'Valley','Azanulbizar · Misty Mountains','Nanduhirion lies outside the East Gate of Moria. Scene of the great battle between Dwarves and Orcs where Azog was slain.','Dimrill_Dale',1),
+  entry('mirrormere','Mirrormere',-.58,-.38,'Sacred lake','Kheled-zâram · Dimrill Dale','Durin looked into this still dark lake and saw a crown of stars above his reflection, leading him to found Khazad-dûm.','Mirrormere',2),
+  entry('redhorn-gate','Redhorn Gate',-1.2,-1.0,'Mountain pass','Caradhras · Misty Mountains','The high pass over the Redhorn beneath Caradhras. Fierce blizzards forced the Fellowship to turn back towards Moria.','Redhorn_Gate',1),
+  entry('ost-in-edhil','Ost-in-Edhil',-2.35,-.9,'Ruined Elven city','Eregion · Hollin','The capital of Eregion where Celebrimbor and the Gwaith-i-Mírdain dwelt and forged the Rings of Power with Sauron’s aid.','Ost-in-Edhil',1),
+  entry('field-celebrant','Field of Celebrant',.9,.1,'Historic battlefield','Between Silverlode and Limlight','Here Eorl the Young led the Éothéod in relief of Gondor in TA 2510, earning the land of Calenardhon that became Rohan.','Field_of_Celebrant',1),
+  entry('cair-andros','Cair Andros',2.5,3.55,'Fortified island','Anduin · Gondor','An island shaped like a great ship that guarded the river passage above Osgiliath against crossings from the east.','Cair_Andros',0),
+  entry('pelennor-fields','Pelennor Fields',2.75,4.45,'Plain & battlefield','Anórien · Minas Tirith','The townlands of Minas Tirith within the Rammas Echor wall. Scene of the battle where the Witch-king fell.','Pelennor_Fields',1),
+  entry('harlond-gondor','Harlond',2.7,4.65,'River haven','Anduin · Pelennor','The quays of Minas Tirith on the Anduin, where Aragorn landed the captured black fleet to turn the battle.','Harlond_(Gondor)',2),
+  entry('paths-dead','Paths of the Dead',-.45,3.65,'Haunted passage','White Mountains · Dwimorberg','A dark road beneath the mountains. Aragorn passed through to summon the Oathbreakers at the Stone of Erech.','Paths_of_the_Dead',2),
+  entry('erech','Stone of Erech',-.65,4.35,'Black stone monument','Blackroot Vale · Morthond','A massive black stone brought from Númenor by Isildur, where the King of the Mountains swore and broke his oath.','Stone_of_Erech',1),
+  entry('calembel','Calembel',.15,4.95,'Settlement','Lamedon · Gondor','The chief town of Lamedon on the river Ciril, passed by Aragorn and the Grey Company as they hurried to Pelargir.','Calembel',1),
+  entry('linhir','Linhir',1.15,5.85,'River crossing','Gilrain · Lebennin','A haven and crossing near the mouth of the Gilrain where the defenders of Lebennin fought off the Haradrim.','Linhir',1),
+  entry('tolfalas','Tolfalas',-.3,7.2,'Island','Bay of Belfalas · Mouths of Anduin','A great rugged island standing in the Bay of Belfalas off the delta of the Great River.','Tolfalas',0),
+  entry('durthang','Durthang',4.35,2.9,'Fortress','Ephel Dúath · Mordor','An ancient castle of Gondor built to watch Mordor, later used as an orc stronghold in northern Mordor.','Durthang',1),
+  entry('carach-angren','Carach Angren',4.85,3.1,'Fortified pass','Isenmouthe · Mordor','The Isenmouthe: a narrow gorge defended by ramparts, connecting the valley of Udûn with Gorgoroth.','Carach_Angren',1),
+  entry('lond-daer','Lond Daer',-7.2,2.45,'Ancient haven','Enedwaith · Mouth of Greyflood','An ancient haven built by King Aldarion of Númenor for timber-shipping, once called the Great Middle Haven.','Lond_Daer',1),
+  entry('withered-heath','Withered Heath',6.3,-5.1,'Highland valley','Ered Mithrin · Grey Mountains','A desolate plateau in the eastern Grey Mountains, known as the breeding ground of the great dragons.','Withered_Heath',1)
 ];
 export const localAreas=[
   entry('iron-hills','Iron Hills',8.3,-4.7,'Hill country','Eastern Rhovanion','Dwarven country east of Erebor. Dáin Ironfoot led warriors from here to the Battle of Five Armies.','Iron Hills',0),
@@ -59,6 +84,18 @@ export const localAreas=[
   entry('southfarthing','Southfarthing',-6.4,-1.89,'District','The Shire','The southern division of the Shire, known for its pipe-weed.'),
   entry('northfarthing','Northfarthing',-6.57,-3.23,'District','The Shire','The northern division of the Shire, with cooler upland country.'),
   entry('gorgoroth','Gorgoroth',5.93,3.71,'Volcanic plateau','Mordor','The desolate plateau surrounding Mount Doom and the approaches to Barad-dûr.'),
+  entry('ered-mithrin','Ered Mithrin',2.8,-5.2,'Mountain range','Northern Wilderland','The Grey Mountains, running east from Mount Gundabad. Ancient home to Dwarven mansions abandoned to dragons.','Ered_Mithrin',0),
+  entry('angmar-region','Angmar',-2.0,-5.6,'Northern realm','North of the Misty Mountains','The realm of the Witch-king, established in the Third Age to destroy the divided Dúnedain kingdoms of Arnor.','Angmar',0),
+  entry('north-downs','North Downs',-4.8,-3.5,'Hills','Eriador · Arthedain','A range of green hills where the kings of Arthedain ruled from Fornost after the fall of Annúminas.','North_Downs'),
+  entry('westfarthing','Westfarthing',-6.8,-2.45,'District','The Shire','The most populous division of the Shire, containing Hobbiton, Bywater, Michel Delving and the White Downs.','Westfarthing'),
+  entry('eastfarthing','Eastfarthing',-5.8,-2.4,'District','The Shire','The eastern division of the Shire, bordering the Brandywine and containing the Marish and the bridge.','Eastfarthing'),
+  entry('lossarnach','Lossarnach',2.05,4.6,'Fief of Gondor','Valleys of the White Mountains','A fertile fief in the valleys of Mount Mindolluin, famed for its flowery orchards. Lord Forlong led its axemen.','Lossarnach'),
+  entry('lamedon','Lamedon',.1,4.85,'Fief of Gondor','Southern White Mountains','A mountainous fief on the southern slopes of the White Mountains, centered around the river Ciril.','Lamedon'),
+  entry('pinnath-gelin','Pinnath Gelin',-3.6,5.4,'Fief of Gondor','Green Hills · Western Gondor','The Green Hills of western Gondor. Hirluin the Fair brought three hundred gallant men in green to Minas Tirith.','Pinnath_Gelin'),
+  entry('udun-mordor','Udûn',4.45,2.8,'Valley','Northern Mordor','The deep circular valley behind the Black Gate, where Sauron’s armies massed before passing through the Morannon.','Udûn_(Mordor)'),
+  entry('lithlad','Lithlad',8.8,4.8,'Plain of Ash','Southeastern Mordor','The vast Plain of Ash in southern Mordor, west of Khand and north of the cultivated plains of Nurn.','Lithlad',0),
+  entry('emyn-arnen','Emyn Arnen',3.3,4.7,'Hills','Central Ithilien','The Hills of Arnen in Ithilien, home to the line of the Stewards. Seat of Prince Faramir after the war.','Emyn_Arnen'),
+  entry('ethir-anduin','Ethir Anduin',-.1,6.8,'River mouths / Delta','Bay of Belfalas · Gondor','The broad delta where the Anduin divides into many channels and flows out into the Bay of Belfalas.','Ethir_Anduin')
 ].map(area=>({...area,area:true}));
 const river=(id,name,region,points,description,level=1,article=name,joins)=>({
   ...entry(id,name,...points[Math.floor(points.length/2)],'River',region,description,article,level),points,joins,width:level===0?.024:.014
@@ -91,6 +128,10 @@ export const rivers=[
   river('silverlode','Silverlode','Lothlórien',[[-.6,-.75],[-.29,-.43],[.03,-.32],[.43,-.12],[1.14,.4]],'The Celebrant runs from the Misty Mountains through Lórien to the Anduin.',1,'Celebrant','anduin'),
   river('nimrodel-river','Nimrodel','Lothlórien',[[-.61,-.25],[-.31,-.21],[.03,-.32]],'The Fellowship crossed this clear stream near the western edge of Lórien.',2,'Nimrodel (river)','silverlode'),
   river('gladden-river','Gladden River','Rhovanion',[[-.47,-1.76],[-.06,-1.63],[.42,-1.78],[.82,-1.4]],'A tributary entering the Anduin at the Gladden Fields.',1,'Gladden River','anduin'),
+  river('sirannon','Sirannon','Eregion / Moria',[[-.95,-.5],[-1.4,-.65],[-1.85,-.48]],'The Gate-stream of Moria descends from the West Gate to join the Glanduin.',2,'Sirannon','glanduin'),
+  river('morthond','Morthond','Gondor · Blackroot Vale',[[-.6,3.8],[-.8,4.4],[-1.2,5.2],[-1.5,5.9]],'The Blackroot flows south from the Dwimorberg through the Blackroot Vale towards the sea.',1,'Morthond'),
+  river('lefnui','Lefnui','Western Gondor',[[-3.2,4.8],[-3.5,5.3],[-3.8,5.9],[-4.2,6.4]],'The western river of Gondor, flowing past the Pinnath Gelin into the sea.',1,'Lefnui'),
+  river('ringlo','Ringló','Gondor · Lamedon',[[.2,4.2],[.4,4.7],[.8,5.3],[1.15,5.85]],'Flowing from the White Mountains through Lamedon, the Ringló joins the Gilrain near Linhir.',1,'Ringló')
 ];
 export const lakes=[
   {...entry('nurnen','Sea of Núrnen',8.0,6.12,'Inland sea','Nurn · Southern Mordor','A dark inland sea surrounded by the cultivated lands of Nurn. After Sauron’s defeat, Aragorn gave those lands to the freed slaves.','Sea of Núrnen',0),aliases:['Sea of Nurnen','Nurnen','Lake Nurnen'],rx:1.18,rz:.55},

@@ -90,7 +90,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .place-label:hover,.place-label:focus-visible { background: #e8e1d1; color:#17211d; text-shadow:none; z-index: 4; }
 .event-label { color:#ffdc85; background:transparent; padding:5px; font-size:20px; }
 .region-label { font: 11px Georgia,serif; letter-spacing: .14em; color:#f3e9c3; opacity:.68; text-shadow:0 1px 3px #10251a; }
-.controls-panel { top: 26px; right: 26px; width: 230px; }
+.controls-panel { top: 76px; right: 26px; width: 250px; }
 .compass { top:auto; right:auto; left:28px; bottom:72px; }
 .compass i { transform:none; top:16px; height:18px; }
 .compass b { transform:rotate(90deg); top:20px; height:15px; }
@@ -195,13 +195,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
   width:100vw; height:100vh; max-width:none; min-height:0; flex:1; border:0;
 }
 
-/* In-Map Search Bar */
+/* In-Map Search Bar - positioned on right side */
 .map-search {
-  position:absolute; top:24px; left:50%; transform:translateX(-50%); z-index:4;
-  width:min(440px, calc(100% - 340px)); min-width:240px;
+  position:absolute; top:24px; right:26px; z-index:4;
+  width:250px;
 }
 .search-input-wrap {
-  display:flex; align-items:center; background:rgba(18,30,25,.88); border:1px solid rgba(232,225,209,.28);
+  display:flex; align-items:center; background:rgba(20,31,27,.92); border:1px solid rgba(232,225,209,.22);
   border-radius:4px; padding:0 10px; backdrop-filter:blur(12px); transition:border-color .2s, box-shadow .2s;
 }
 .search-input-wrap:focus-within {
@@ -219,10 +219,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .search-clear { background:transparent; border:0; color:#b5bfb3; font-size:16px; cursor:pointer; padding:0 4px; line-height:1; }
 .search-clear:hover { color:var(--gold); }
 .map-search-dropdown {
-  position:absolute; top:calc(100% + 5px); left:0; right:0; max-height:300px; overflow-y:auto;
+  position:absolute; top:calc(100% + 6px); right:0; width:310px; max-height:290px; overflow-y:auto;
   background:rgba(18,30,25,.96); border:1px solid rgba(232,225,209,.25); border-radius:4px;
-  backdrop-filter:blur(14px); box-shadow:0 12px 32px rgba(0,0,0,.55); display:flex; flex-direction:column;
+  backdrop-filter:blur(14px); box-shadow:0 12px 32px rgba(0,0,0,.65); display:flex; flex-direction:column;
   padding:4px; z-index:5;
+}
+.map-search-dropdown[hidden] {
+  display:none !important;
 }
 .map-search-item {
   display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 10px; border:0;
@@ -245,7 +248,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .map-search-empty { padding:14px 10px; color:#8c9b91; font-size:11px; text-align:center; }
 
 @media(max-width:760px) {
-  .map-search { left:14px; right:14px; transform:none; width:auto; top:12px; }
+  .map-search { top:12px; right:14px; left:auto; width:min(260px, calc(100vw - 28px)); }
+  .map-search-dropdown { width:100%; right:0; }
   .view-actions { margin-top:4px; }
 }
 

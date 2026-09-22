@@ -1,6 +1,6 @@
 # Middle-earth in relief
 
-A static Three.js atlas of northwestern Middle-earth, with procedural mountain relief, independently toggleable Frodo/Bilbo outward journeys, eight historical events, and 115 searchable places, districts and waterways with clickable lore and reading references.
+A static Three.js atlas of northwestern Middle-earth, with procedural mountain relief, independently toggleable Frodo/Bilbo outward journeys, 15 historical events, and 156 searchable places, districts, waterways and landmarks with clickable lore and reading references.
 
 ## Run
 
@@ -119,3 +119,12 @@ node --experimental-default-type=module tests/landmarks.test.mjs
 ```
 
 Checks cover the low-poly triangle budget, lazy creation, resource reuse, finite geometry/particle positions, relief anchoring and model raycasting. Chromium validation covers default low mode, opt-in animation, returning to idle, reduced motion, offscreen suspension, mobile layout and reload defaults.
+
+## Expanded canonical geography and timeline events
+
+Referencing LOTRProject map & timeline, Tolkien Gateway, and canonical Tolkien geography, the atlas has expanded to include key historical milestones and landmarks across Middle-earth:
+
+- **25 New Canonical Places**: Annúminas, Fornost, Barrow-downs, Michel Delving, Crickhollow, Carn Dûm, Mount Gundabad, Rhosgobel, Dimrill Dale, Mirrormere, Redhorn Gate, Ost-in-Edhil, Field of Celebrant, Cair Andros, Pelennor Fields, Harlond (Gondor), Paths of the Dead, Stone of Erech, Calembel, Linhir, Tolfalas, Durthang, Carach Angren (Isenmouthe), Lond Daer, and the Withered Heath.
+- **12 Regional Areas**: Ered Mithrin (Grey Mountains), Realm of Angmar, North Downs, Westfarthing, Eastfarthing, Lossarnach, Lamedon, Pinnath Gelin, Udûn (Mordor), Lithlad (Plain of Ash), Emyn Arnen, and Ethir Anduin (Delta).
+- **4 Waterways**: Sirannon (Gate-stream of Moria), Morthond (Blackroot), Lefnui, and Ringló.
+- **7 Timeline Milestone Events**: The Siege of Barad-dûr (SA 3434–3441), Battle of the Morannon (25 March TA 3019), The Battle of Bywater (3 Nov TA 3019), Coronation of King Elessar (1 May TA 3019), The Fall of Amon Sûl (TA 1409), The Breaking of the Fellowship (26 Feb TA 3019), and The Council of Elrond (25 Oct TA 3018).

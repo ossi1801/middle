@@ -78,3 +78,22 @@ for(const river of rivers.filter(r=>r.joinsLake)) {
   assert.ok(lake&&Math.hypot((x-lake.x)/lake.rx,(z-lake.z)/lake.rz)<1,'Nurnen feeders reach the lake');
 }
 assert.equal(elevation(8,6.12),.12,'Nurnen basin is level at the lake centre');
+
+// Verifications for expanded canonical Middle-earth datapoints
+for(const id of ['annuminas','fornost','carn-dum','gundabad','cair-andros','pelennor-fields','paths-dead','durthang','withered-heath']) {
+  assert.ok(find(id),`Expected place ${id} to exist`);
+}
+for(const id of ['ered-mithrin','angmar-region','north-downs','westfarthing','eastfarthing','lossarnach','lamedon','pinnath-gelin','udun-mordor','lithlad']) {
+  assert.ok(find(id),`Expected area ${id} to exist`);
+}
+for(const id of ['sirannon','morthond','lefnui','ringlo']) {
+  assert.ok(rivers.find(r=>r.id===id),`Expected river ${id} to exist`);
+}
+for(const id of ['siege-barad-dur','morannon-stand','bywater-battle','coronation','amon-sul-fall','breaking-fellowship','council-elrond']) {
+  assert.ok(events.find(e=>e.id===id),`Expected event ${id} to exist`);
+}
+assert.ok(find('annuminas').x < find('fornost').x, 'Annúminas is west of Fornost');
+assert.ok(find('carn-dum').z < -5, 'Carn Dûm is in the far north of Angmar');
+assert.ok(find('withered-heath').x > find('ered-mithrin').x, 'Withered Heath is east of Ered Mithrin center');
+assert.ok(Math.hypot(find('pelennor-fields').x - find('minas-tirith').x, find('pelennor-fields').z - find('minas-tirith').z) < .5, 'Pelennor Fields is adjacent to Minas Tirith');
+console.log('PASS: expanded canonical Middle-earth places, areas, waterways and historical events');
