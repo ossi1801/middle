@@ -85,10 +85,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .map-title strong { font-size: clamp(40px, 5vw, 68px); }
 .map-wash { background: linear-gradient(180deg,rgba(11,24,23,.25),transparent 25%,transparent 80%,rgba(11,24,23,.4)); }
 .map-labels { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
-.place-label,.region-label { position: absolute; left: 0; top: 0; white-space: nowrap; }
-.place-label { pointer-events: auto; cursor: pointer; padding: 5px 7px; border: 0; background: rgba(18,34,29,.66); border-radius: 3px; color: #f2ecde; font: 600 13px Georgia,serif; text-shadow: 0 1px 3px #000; }
-.place-label:hover,.place-label:focus-visible { background: #e8e1d1; color:#17211d; text-shadow:none; z-index: 4; }
+.place-label,.region-label,.event-label { position: absolute; left: 0; top: 0; white-space: nowrap; pointer-events: none; user-select: none; }
+.place-label { cursor: pointer; padding: 5px 7px; border: 0; background: rgba(18,34,29,.66); border-radius: 3px; color: #f2ecde; font: 600 13px Georgia,serif; text-shadow: 0 1px 3px #000; }
+.place-label:hover,.place-label.is-hovered,.place-label:focus-visible { background: #e8e1d1; color:#17211d; text-shadow:none; z-index: 4; }
 .event-label { color:#ffdc85; background:transparent; padding:5px; font-size:20px; }
+.event-label:hover,.event-label.is-hovered,.event-label:focus-visible { color:#fff; text-shadow:0 0 6px #ffd700; z-index: 4; }
 .region-label { font: 11px Georgia,serif; letter-spacing: .14em; color:#f3e9c3; opacity:.68; text-shadow:0 1px 3px #10251a; }
 .controls-panel { top: 76px; right: 26px; width: 250px; }
 .compass { top:auto; right:auto; left:28px; bottom:72px; }

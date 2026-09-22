@@ -239,54 +239,6 @@ function start() {
   const hitObjects=[];
   const labels=[];
   const labelLayer=$('#map-labels');
-  let labelPress = null;
-  let labelDragged = false;
-
-  labelLayer.addEventListener('wheel', e => {
-    e.preventDefault();
-    renderer.domElement.dispatchEvent(new WheelEvent('wheel', {
-      clientX: e.clientX,
-      clientY: e.clientY,
-      screenX: e.screenX,
-      screenY: e.screenY,
-      deltaX: e.deltaX,
-      deltaY: e.deltaY,
-      deltaZ: e.deltaZ,
-      deltaMode: e.deltaMode,
-      bubbles: true,
-      cancelable: true
-    }));
-  }, { passive: false });
-
-  labelLayer.addEventListener('pointerdown', e => {
-    const btn = e.target.closest('.place-label, .event-label, .region-label');
-    if (!btn) return;
-    labelPress = [e.clientX, e.clientY];
-    labelDragged = false;
-    renderer.domElement.dispatchEvent(new PointerEvent('pointerdown', {
-      pointerId: e.pointerId || 1,
-      pointerType: e.pointerType || 'mouse',
-      clientX: e.clientX,
-      clientY: e.clientY,
-      screenX: e.screenX,
-      screenY: e.screenY,
-      button: e.button,
-      buttons: e.buttons,
-      bubbles: true,
-      cancelable: true
-    }));
-  });
-
-  window.addEventListener('pointermove', e => {
-    if (labelPress && Math.hypot(e.clientX - labelPress[0], e.clientY - labelPress[1]) > 5) {
-      labelDragged = true;
-    }
-  });
-
-  window.addEventListener('pointerup', () => {
-    setTimeout(() => { labelPress = null; labelDragged = false; }, 60);
-  });
-
   function addLabel(data,isEvent=false) {
     const button=document.createElement('button');
     button.className=`place-label${isEvent?' event-label':''}${data.area?' area-label':''}${data.type==='River'||data.type==='Lake'?' water-label':''}${data.level?' local-label':''}`;
@@ -295,14 +247,13 @@ function start() {
     button.textContent=isEvent?'✦':data.name;
     button.title=isEvent?`${data.name} · ${data.date}`:data.name;
     button.setAttribute('aria-label',isEvent?button.title:`Explore ${data.name}`);
-    button.onclick=(e)=>{
-      if (labelDragged) {
+    button.onclick=()=>openLore(data,button);
+    button.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' ') {
         e.preventDefault();
-        e.stopPropagation();
-        return;
+        openLore(data,button);
       }
-      openLore(data,button);
-    };
+    });
     labelLayer.append(button);
     labels.push({button,data,isEvent,height:Math.max(0,elevation(data.x,data.z))+.19});
   }
@@ -383,13 +334,78 @@ function start() {
   }
 
   const raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2();
-  let press;
-  renderer.domElement.addEventListener('pointerdown',e=> {
-    press=[e.clientX,e.clientY];
+  let press=null;
+  let downLabel=null;
+  let hoveredLabel=null;
+
+  function findLabelUnderPoint(clientX, clientY) {
+    for (let i = labels.length - 1; i >= 0; i--) {
+      const item = labels[i];
+      if (item.region || !item.button) continue;
+      if (item.button.style.visibility === 'hidden') continue;
+      const rect = item.button.getBoundingClientRect();
+      if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  renderer.domElement.addEventListener('pointermove', e => {
+    if (e.buttons === 0) {
+      const target = findLabelUnderPoint(e.clientX, e.clientY);
+      if (target !== hoveredLabel) {
+        if (hoveredLabel) hoveredLabel.button.classList.remove('is-hovered');
+        if (target) target.button.classList.add('is-hovered');
+        renderer.domElement.style.cursor = target ? 'pointer' : '';
+        hoveredLabel = target;
+      }
+    }
+  });
+
+  renderer.domElement.addEventListener('pointerleave', () => {
+    if (hoveredLabel) {
+      hoveredLabel.button.classList.remove('is-hovered');
+      hoveredLabel = null;
+      renderer.domElement.style.cursor = '';
+    }
+  });
+
+  renderer.domElement.addEventListener('pointerdown', e => {
+    press = [e.clientX, e.clientY];
+    downLabel = (e.button === 0) ? findLabelUnderPoint(e.clientX, e.clientY) : null;
     closeSearchDropdown();
   });
-  renderer.domElement.addEventListener('pointerup',e=> {
-    if(!press || Math.hypot(e.clientX-press[0],e.clientY-press[1])>5) return;
+
+  renderer.domElement.addEventListener('pointerup', e => {
+    if (!press) return;
+    const moved = Math.hypot(e.clientX - press[0], e.clientY - press[1]);
+    const isClick = moved <= 5;
+    const isLeft = (e.button === 0);
+
+    // Only register a text click if:
+    // 1. Mouse was over the text object at the start of the click
+    // 2. Mouse is over the text object at the end of the click
+    // 3. Mouse did not move / drag
+    // 4. Primary left button
+    if (isLeft && isClick && downLabel) {
+      const upLabel = findLabelUnderPoint(e.clientX, e.clientY);
+      if (upLabel && upLabel === downLabel) {
+        press = null;
+        downLabel = null;
+        setHighlight(upLabel.data);
+        openLore(upLabel.data, upLabel.button);
+        return;
+      }
+    }
+
+    downLabel = null;
+    if (!isClick || !isLeft) {
+      press = null;
+      return;
+    }
+    press = null;
+
     const bounds=renderer.domElement.getBoundingClientRect();
     pointer.set((e.clientX-bounds.left)/bounds.width*2-1,-(e.clientY-bounds.top)/bounds.height*2+1);
     raycaster.setFromCamera(pointer,camera);
