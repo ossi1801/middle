@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three.module.js';
 import { LANDMARK_SITES } from './landmark-sites.js';
 
-export const LANDMARK_IDS=['isengard','barad-dur','mount-doom','minas-tirith','minas-morgul','erebor','rivendell','helms-deep','bag-end'];
+export const LANDMARK_IDS=['isengard','barad-dur','mount-doom','minas-tirith','minas-morgul','erebor','rivendell','helms-deep','bag-end','black-gate'];
 // Small, terrain-grounded miniatures. No model downloads.
 export function createLandmarks(entries,elevation) {
   const root=new THREE.Group();root.name='Atlas landmarks';
@@ -15,7 +15,7 @@ export function createLandmarks(entries,elevation) {
       for(let i=0;i<colors.length;i+=3)colors.set([c.r,c.g,c.b],i);
       g.setAttribute('color',new THREE.BufferAttribute(colors,3));(glow?glowing:pieces).push(g);
     };
-    const box=(color,x,y,z,w,h,d)=>add(new THREE.BoxGeometry(w,h,d),color,x,y,z);
+    const box=(color,x,y,z,w,h,d,scale=[1,1,1],rotation=[0,0,0],glow=false)=>add(new THREE.BoxGeometry(w,h,d),color,x,y,z,scale,rotation,glow);
     const cylinder=(color,x,y,z,top,bottom,h)=>add(new THREE.CylinderGeometry(top,bottom,h,segments),color,x,y,z);
     const cone=(color,x,y,z,r,h)=>add(new THREE.ConeGeometry(r,h,rich?16:4),color,x,y,z);
     const ring=(color,x,y,z,r,t,glow=false,vertical=false)=>add(new THREE.TorusGeometry(r,t,rich?8:4,segments),color,x,y,z,[1,1,1],[vertical?0:Math.PI/2,0,0],glow);
@@ -64,8 +64,26 @@ export function createLandmarks(entries,elevation) {
       ring(gold,0,.065,.226,.076,.009,false,true);
       box('#6a5040',.14,.2,-.03,.05,.21,.05);
       add(new THREE.SphereGeometry(.009,6,4),gold,.03,.065,.232);
+    } else if(id==='black-gate') {
+      const iron='#16191c',steel='#3a4148',door='#090c0e';
+      box(dark,0,.14,0,.52,.26,.09);
+      box(door,0,.09,.046,.14,.18,.015);
+      box(iron,0,.19,.048,.18,.035,.018);
+      for(let i=0;i<5;i++)box(dark,-.16+i*.08,.29,0,.045,.06,.095);
+      for(const x of [-.30,.30]) {
+        box(dark,x,.18,0,.15,.36,.15);
+        cylinder(iron,x,.42,0,.06,.075,.24);
+        cylinder(steel,x,.55,0,.07,.06,.05);
+        cone(dark,x,.66,0,.06,.22);
+        if(rich) {
+          for(const dx of [-.05,.05])for(const dz of [-.05,.05])cone(iron,x+dx,.58,dz,.018,.1);
+          box('#ff4a11',x,.42,.065,.02,.05,.01,[1,1,1],[0,0,0],true);
+        }
+      }
+      box(dark,-.38,.10,-.03,.12,.18,.12);
+      box(dark,.38,.10,-.03,.12,.18,.12);
     }
-    if(rich&&id!=='mount-doom'&&id!=='bag-end') {
+    if(rich&&id!=='mount-doom'&&id!=='bag-end'&&id!=='black-gate') {
       for(let i=0;i<12;i++){const angle=i/12*Math.PI*2;box(stone,Math.sin(angle)*.27,.07,Math.cos(angle)*.27,.022,.09,.022);}
       if(['isengard','barad-dur','minas-morgul'].includes(id))for(let i=0;i<5;i++)ring('#4c5355',0,.15+i*.13,0,.16-i*.014,.009);
     }
@@ -90,6 +108,7 @@ export function createLandmarks(entries,elevation) {
     const anchor=new THREE.Group();anchor.name=id;
     anchor.position.set(site.x,elevation(site.x,site.z)-(site.inset||0),site.z);
     anchor.scale.setScalar(site.scale);
+    if(site.rotation)anchor.rotation.y=site.rotation;
     const low=build(id,false);anchor.add(low);root.add(anchor);records.push({data,site,anchor,low,high:null});
   }
   function makeEffects(){

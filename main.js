@@ -49,7 +49,7 @@ function populateIndex() {
   for(const place of matches) {
     const button = document.createElement('button');
     button.textContent = place.name;
-    button.onclick = () => { focusPlace(place); openLore(place,button); };
+    button.onclick = () => { focusPlace(place, true); openLore(place,button); };
     $('#place-results').append(button);
   }
   if(!matches.length) $('#place-results').textContent = 'No places found. Try a region such as Rohan.';
@@ -259,7 +259,7 @@ function start() {
     const element=document.createElement('span');element.className='region-label';element.textContent=name;
     labelLayer.append(element);labels.push({button:element,data:{x,z},region:true,height:Math.max(0,elevation(x,z))+.08});
   }
-  const prominent=new Set(['bag-end','rivendell','minas-tirith','isengard','osgiliath','minas-morgul','nurnen','iron-hills','south-gondor','near-harad','khand','harad']);
+  const prominent=new Set(['bag-end','rivendell','minas-tirith','isengard','osgiliath','minas-morgul','black-gate','nurnen','iron-hills','south-gondor','near-harad','khand','harad']);
   labels.sort((a,b)=>Number(prominent.has(b.data.id))-Number(prominent.has(a.data.id)));
   function syncLayers() {
     for(const input of document.querySelectorAll('[data-layer]')) {
@@ -271,6 +271,50 @@ function start() {
   }
   document.querySelectorAll('[data-layer]').forEach(input=>input.addEventListener('change',syncLayers));
   syncLayers();
+
+  // 3D Highlight Beacon for searched/selected locations
+  const highlightGroup=new THREE.Group();
+  highlightGroup.name='Search Highlight';
+  highlightGroup.visible=false;
+  scene.add(highlightGroup);
+
+  const beaconRingGeom=new THREE.RingGeometry(.12,.18,32);
+  beaconRingGeom.rotateX(-Math.PI/2);
+  const beaconRingMat=new THREE.MeshBasicMaterial({color:0xd6a650,side:THREE.DoubleSide,transparent:true,opacity:.9,depthWrite:false});
+  const beaconRing=new THREE.Mesh(beaconRingGeom,beaconRingMat);
+  highlightGroup.add(beaconRing);
+
+  const pulseRingGeom=new THREE.RingGeometry(.04,.09,32);
+  pulseRingGeom.rotateX(-Math.PI/2);
+  const pulseRingMat=new THREE.MeshBasicMaterial({color:0xffe29a,side:THREE.DoubleSide,transparent:true,opacity:.8,depthWrite:false});
+  const pulseRing=new THREE.Mesh(pulseRingGeom,pulseRingMat);
+  highlightGroup.add(pulseRing);
+
+  const pillarGeom=new THREE.CylinderGeometry(.05,.14,1.8,24,1,true);
+  const pillarMat=new THREE.MeshBasicMaterial({color:0xf6d376,side:THREE.DoubleSide,transparent:true,opacity:.35,depthWrite:false,blending:THREE.AdditiveBlending});
+  const pillar=new THREE.Mesh(pillarGeom,pillarMat);
+  pillar.position.y=.9;
+  highlightGroup.add(pillar);
+
+  let highlightedTarget=null;
+
+  function clearHighlight() {
+    highlightedTarget=null;
+    highlightGroup.visible=false;
+    for(const l of labels) l.button.classList.remove('is-highlighted');
+    lastViewKey='';
+    invalidate();
+  }
+
+  function setHighlight(place) {
+    highlightedTarget=place;
+    highlightGroup.position.set(place.x,(Math.max(0,elevation(place.x,place.z))+.04)*relief,place.z);
+    highlightGroup.visible=true;
+    for(const l of labels) l.button.classList.toggle('is-highlighted',l.data.id===place.id);
+    lastViewKey='';
+    invalidate();
+  }
+
   const raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2();
   let press;
   renderer.domElement.addEventListener('pointerdown',e=> {press=[e.clientX,e.clientY];});
@@ -281,18 +325,54 @@ function start() {
     raycaster.setFromCamera(pointer,camera);
     const hits=raycaster.intersectObjects(hitObjects.filter(o=>o.visible&&(o.parent!==eventGroup||eventGroup.visible)));
     const landmarkHit=landmarks.pick(raycaster);
-    if(landmarkHit&&(!hits.length||landmarkHit.distance<hits[0].distance))openLore(landmarkHit.data,$('#place-search'));
-    else if(hits.length)openLore(hits[0].object.userData.entry,$('#place-search'));
+    if(landmarkHit&&(!hits.length||landmarkHit.distance<hits[0].distance)) {
+      setHighlight(landmarkHit.data);
+      openLore(landmarkHit.data,$('#place-search'));
+    } else if(hits.length) {
+      setHighlight(hits[0].object.userData.entry);
+      openLore(hits[0].object.userData.entry,$('#place-search'));
+    }
   });
+
   const homeDirection=new THREE.Vector3(0,1.3,1).normalize();
   let topDown=false;
-  function reset(top=false) {
+
+  function updateTopDownUI(top) {
     topDown=top;
     controls.enableRotate=!top;
     controls.mouseButtons.LEFT=top?THREE.MOUSE.PAN:THREE.MOUSE.ROTATE;
     controls.touches.ONE=top?THREE.TOUCH.PAN:THREE.TOUCH.ROTATE;
     $('.map-hint').textContent=top?'DRAG TO PAN · SCROLL TO ZOOM · CLICK A MARKER':'DRAG TO ORBIT · SCROLL TO ZOOM · CLICK A MARKER';
-    $('#top-view').setAttribute('aria-pressed',String(top));
+    const topBtn=$('#top-view');
+    if(topBtn) {
+      topBtn.setAttribute('aria-pressed',String(top));
+      topBtn.textContent=top?'Perspective view ↗':'Top-down view ↓';
+      topBtn.title=top?'Return to 3D perspective view':'Look straight down; click again to toggle perspective view';
+    }
+  }
+
+  function toggleTopDown() {
+    const next=!topDown;
+    updateTopDownUI(next);
+    controls.enableDamping=false;
+    const vfov=THREE.MathUtils.degToRad(camera.fov);
+    const horizontal=2*Math.atan(Math.tan(vfov/2)*camera.aspect);
+    const defaultDistance=Math.max(DEPTH/2/Math.tan(vfov/2),WIDTH/2/Math.tan(horizontal/2))*1.12;
+    const currentDistance=camera.position.distanceTo(controls.target)||defaultDistance;
+    const distance=THREE.MathUtils.clamp(currentDistance,2.8,controls.maxDistance);
+    if(next) {
+      camera.position.set(controls.target.x,controls.target.y+distance,controls.target.z);
+    } else {
+      camera.position.copy(controls.target).add(homeDirection.clone().multiplyScalar(distance));
+    }
+    controls.update();
+    controls.enableDamping=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+    invalidate();
+  }
+
+  function reset(top=false) {
+    updateTopDownUI(top);
+    clearHighlight();
     controls.enableDamping=false;
     controls.update();
     const vfov=THREE.MathUtils.degToRad(camera.fov);
@@ -305,20 +385,196 @@ function start() {
     controls.enableDamping=!matchMedia('(prefers-reduced-motion: reduce)').matches;
     invalidate();
   }
+
   $('#reset-view').onclick=()=>reset();
-  $('#top-view').onclick=()=>reset(true);
+  $('#top-view').onclick=()=>toggleTopDown();
   $('#explore-rohan').onclick=()=>{reset(true);focusPlace({x:.1,z:2.4,level:1});closeLore();};
   $('#explore-east').onclick=()=>{reset(true);focusPlace({x:8,z:4.7,viewPixels:65});closeLore();};
   $('#map-details').addEventListener('change',invalidate);
-  focusPlace=place=>{
+
+  focusPlace=(place,highlight=true)=>{
     const target=point(place.x,place.z);
     target.y*=relief;
     const desiredPixels=place.viewPixels||(place.level===2?230:place.level===1?155:115);
     const distance=THREE.MathUtils.clamp(mapElement.clientHeight/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*desiredPixels),2.8,30);
-    const offset=camera.position.clone().sub(controls.target).normalize().multiplyScalar(distance);
-    controls.target.copy(target);camera.position.copy(target).add(offset);controls.update();invalidate();
+    if(topDown) {
+      camera.position.set(target.x,target.y+distance,target.z);
+    } else {
+      const offset=camera.position.clone().sub(controls.target).normalize().multiplyScalar(distance);
+      camera.position.copy(target).add(offset);
+    }
+    controls.target.copy(target);
+    controls.update();
+    if(highlight) setHighlight(place);
+    invalidate();
   };
-  $('#relief').addEventListener('input',e=>{relief=Number(e.target.value);terrainGroup.scale.y=relief;landmarks.setRelief(relief);$('#relief-value').textContent=`${relief.toFixed(1)}×`;invalidate();});
+
+  // Fullscreen Application Toggle
+  const fullscreenBtn=$('#fullscreen-toggle');
+  function isFullscreen() {
+    return !!(document.fullscreenElement||document.webkitFullscreenElement||document.querySelector('.atlas-shell')?.classList.contains('is-fullscreen'));
+  }
+  function updateFullscreenUI() {
+    const fs=isFullscreen();
+    if(fullscreenBtn) {
+      fullscreenBtn.setAttribute('aria-pressed',String(fs));
+      fullscreenBtn.innerHTML=fs?'Exit full screen <span>✕</span>':'Full screen <span>⛶</span>';
+      fullscreenBtn.title=fs?'Exit full screen application (Esc / F)':'Toggle full screen application (F)';
+    }
+    resize();
+    invalidate();
+  }
+  function toggleFullscreen() {
+    const shell=document.querySelector('.atlas-shell')||document.documentElement;
+    if(document.fullscreenElement||document.webkitFullscreenElement) {
+      if(document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } else if(shell.requestFullscreen) {
+      shell.requestFullscreen().catch(()=>{
+        shell.classList.toggle('is-fullscreen');
+        updateFullscreenUI();
+      });
+    } else if(shell.webkitRequestFullscreen) {
+      shell.webkitRequestFullscreen();
+    } else {
+      shell.classList.toggle('is-fullscreen');
+      updateFullscreenUI();
+    }
+  }
+  if(fullscreenBtn) fullscreenBtn.onclick=toggleFullscreen;
+  document.addEventListener('fullscreenchange',updateFullscreenUI);
+  document.addEventListener('webkitfullscreenchange',updateFullscreenUI);
+  document.addEventListener('keydown',e=>{
+    if(e.key.toLowerCase()==='f'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){
+      e.preventDefault();
+      toggleFullscreen();
+    }
+  });
+
+  // In-map search bar setup
+  const mapSearchInput=$('#map-search-input');
+  const mapSearchClear=$('#map-search-clear');
+  const mapSearchDropdown=$('#map-search-dropdown');
+  const allSearchItems=[...atlasEntries,...events];
+
+  function searchPlaces(rawQuery) {
+    const normalize=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase();
+    const query=normalize(rawQuery.trim());
+    if(!query) return [];
+    return allSearchItems.filter(p=>{
+      const haystack=normalize(`${p.name} ${p.region||''} ${(p.aliases||[]).join(' ')} ${p.type||''}`);
+      return haystack.includes(query);
+    });
+  }
+
+  let selectedDropdownIndex=-1;
+
+  function renderMapSearchResults(matches) {
+    if(!mapSearchDropdown) return;
+    mapSearchDropdown.replaceChildren();
+    selectedDropdownIndex=-1;
+    if(!matches.length) {
+      const empty=document.createElement('div');
+      empty.className='map-search-empty';
+      empty.textContent='No places found.';
+      mapSearchDropdown.append(empty);
+      mapSearchDropdown.hidden=false;
+      return;
+    }
+    const displayed=matches.slice(0,10);
+    displayed.forEach((place,i)=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='map-search-item';
+      button.role='option';
+      button.dataset.index=i;
+      const left=document.createElement('span');
+      const strong=document.createElement('strong');
+      strong.textContent=place.name;
+      left.append(strong);
+      if(place.region) {
+        const small=document.createElement('small');
+        small.textContent=place.region;
+        left.append(small);
+      }
+      const tag=document.createElement('span');
+      tag.className='map-search-tag';
+      tag.textContent=place.type||'Place';
+      button.append(left,tag);
+      button.onclick=()=>{
+        selectSearchPlace(place);
+      };
+      mapSearchDropdown.append(button);
+    });
+    mapSearchDropdown.hidden=false;
+  }
+
+  function selectSearchPlace(place) {
+    if(mapSearchInput) mapSearchInput.value=place.name;
+    if(mapSearchClear) mapSearchClear.hidden=false;
+    if(mapSearchDropdown) mapSearchDropdown.hidden=true;
+    selectedDropdownIndex=-1;
+    focusPlace(place,true);
+    openLore(place,mapSearchInput);
+  }
+
+  if(mapSearchInput) {
+    mapSearchInput.addEventListener('input',()=>{
+      const q=mapSearchInput.value.trim();
+      if(mapSearchClear) mapSearchClear.hidden=!q;
+      if(!q) {
+        if(mapSearchDropdown) mapSearchDropdown.hidden=true;
+        return;
+      }
+      const matches=searchPlaces(q);
+      renderMapSearchResults(matches);
+    });
+    mapSearchInput.addEventListener('keydown',e=>{
+      if(!mapSearchDropdown||mapSearchDropdown.hidden) return;
+      const items=mapSearchDropdown.querySelectorAll('.map-search-item');
+      if(e.key==='ArrowDown') {
+        e.preventDefault();
+        if(!items.length) return;
+        selectedDropdownIndex=(selectedDropdownIndex+1)%items.length;
+        items.forEach((item,idx)=>item.classList.toggle('is-selected',idx===selectedDropdownIndex));
+        items[selectedDropdownIndex]?.scrollIntoView({block:'nearest'});
+      } else if(e.key==='ArrowUp') {
+        e.preventDefault();
+        if(!items.length) return;
+        selectedDropdownIndex=(selectedDropdownIndex-1+items.length)%items.length;
+        items.forEach((item,idx)=>item.classList.toggle('is-selected',idx===selectedDropdownIndex));
+        items[selectedDropdownIndex]?.scrollIntoView({block:'nearest'});
+      } else if(e.key==='Enter') {
+        e.preventDefault();
+        if(selectedDropdownIndex>=0&&items[selectedDropdownIndex]) {
+          items[selectedDropdownIndex].click();
+        } else {
+          const matches=searchPlaces(mapSearchInput.value);
+          if(matches.length) selectSearchPlace(matches[0]);
+        }
+      } else if(e.key==='Escape') {
+        mapSearchDropdown.hidden=true;
+        selectedDropdownIndex=-1;
+      }
+    });
+    if(mapSearchClear) {
+      mapSearchClear.onclick=()=>{
+        mapSearchInput.value='';
+        mapSearchClear.hidden=true;
+        if(mapSearchDropdown) mapSearchDropdown.hidden=true;
+        selectedDropdownIndex=-1;
+        mapSearchInput.focus();
+      };
+    }
+    document.addEventListener('click',e=>{
+      if(!e.target.closest('.map-search')) {
+        if(mapSearchDropdown) mapSearchDropdown.hidden=true;
+        selectedDropdownIndex=-1;
+      }
+    });
+  }
+
+  $('#relief').addEventListener('input',e=>{relief=Number(e.target.value);terrainGroup.scale.y=relief;landmarks.setRelief(relief);if(highlightedTarget)highlightGroup.position.y=(Math.max(0,elevation(highlightedTarget.x,highlightedTarget.z))+.04)*relief;$('#relief-value').textContent=`${relief.toFixed(1)}×`;invalidate();});
   $('#export-heightmap').onclick=()=>{
     const size=512,values=sampleHeightmap(size),canvas=document.createElement('canvas');
     canvas.width=canvas.height=size;const context=canvas.getContext('2d'),data=context.createImageData(size,size);
@@ -346,7 +602,15 @@ function start() {
     const level=$('#map-details').checked?detailLevel(pixelsPerUnit):0;
     $('#detail-status').textContent=level===2?'LOCAL DETAIL · streams & landmarks':level===1?'REGIONAL DETAIL · districts & tributaries':'OVERVIEW · zoom in for regional detail';
     for(const item of detailMeshes)item.mesh.visible=item.level===0||item.level<=level;
-    const viewKey=camera.matrixWorld.elements.join(',')+`/${width}/${height}/${relief}/${level}/${eventGroup.visible}`;
+    if(highlightGroup.visible) {
+      const t=performance.now()/1000;
+      const pulse=(t*1.4)%1;
+      pulseRing.scale.setScalar(1+pulse*3.5);
+      pulseRingMat.opacity=Math.max(0,(1-pulse)*.85);
+      beaconRingMat.opacity=.6+.35*Math.sin(t*4);
+      pillarMat.opacity=.2+.15*Math.sin(t*3);
+    }
+    const viewKey=camera.matrixWorld.elements.join(',')+`/${width}/${height}/${relief}/${level}/${eventGroup.visible}/${highlightedTarget?.id||''}`;
     if(viewKey!==lastViewKey){
     lastViewKey=viewKey;
     const occupied=[];
@@ -357,7 +621,13 @@ function start() {
       const x=(projected.x*.5+.5)*width,yPixel=(-projected.y*.5+.5)*height;
       let labelY=yPixel;
       let visible=(data.level||0)<=level&&(!region||level===0)&&projected.z>-1&&projected.z<1&&x>12&&x<width-12&&yPixel>12&&yPixel<height-12&&(!isEvent||eventGroup.visible);
-      if(visible&&!region&&!isEvent){
+      const isHighlightedTarget=highlightedTarget&&data.id===highlightedTarget.id;
+      if(isHighlightedTarget){
+        visible=true;
+        button.classList.add('is-highlighted');
+        const w=label.width;
+        occupied.push([x-w*.5,yPixel-23,x+w*.5,yPixel]);
+      } else if(visible&&!region&&!isEvent){
         const w=label.width;
         // Small alternative placements keep rivers and district names readable near towns.
         const offsets=prominent.has(data.id)?[0,-24,24,-48,48,-72,72]:data.area||data.type==='River'||data.type==='Lake'?[0,-24,24,-48,48]:[0];
@@ -378,7 +648,7 @@ function start() {
     landmarks.update(reducedMotion.matches?0:performance.now()/1000,camera);
     renderer.render(scene,camera);
     if(moving)invalidate();
-    else if(landmarks.enhanced&&!reducedMotion.matches&&!document.hidden&&mapVisible){
+    else if((landmarks.enhanced||highlightGroup.visible)&&!reducedMotion.matches&&!document.hidden&&mapVisible){
       clearTimeout(animationTimer);animationTimer=setTimeout(invalidate,33);
     }
   }

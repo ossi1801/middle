@@ -74,7 +74,8 @@ export function elevation(x,z) {
   // Nan Curunír is a valley below Methedras, not a ridge-top settlement.
   const isengardValley=Math.exp(-(((x+1.75)/.48)**2+((z-1.9)/.64)**2));
   const morgulVale=Math.exp(-(((x-3.98)/.35)**2+((z-4.48)/.28)**2));
-  h+=mountains*(1-.96*isengardValley)*(1-.84*morgulVale);
+  const morannonPass=Math.exp(-(((x-4.15)/.38)**2+((z-2.55)/.30)**2));
+  h+=mountains*(1-.96*isengardValley)*(1-.84*morgulVale)*(1-.82*morannonPass);
   h+=1.7*Math.exp(-((x-4.55)**2+(z+4.7)**2)/.13);
   const volcano=Math.hypot(x-5.35,z-3.45);
   h+=1.12*Math.exp(-((volcano/.36)**2))-.3*Math.exp(-((volcano/.10)**2));

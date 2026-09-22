@@ -9,5 +9,6 @@ export const LANDMARK_SITES={
   'erebor':{x:4.55,z:-4.04,scale:.27,ground:.24,radius:.20},
   'rivendell':{x:-1.8,z:-3.3,scale:.24,ground:.18,radius:.22},
   'helms-deep':{x:-1.6,z:2.85,scale:.24,ground:.20,radius:.22},
-  'bag-end':{x:-6.5,z:-2.6,scale:.22,ground:.18,radius:.20}
+  'bag-end':{x:-6.5,z:-2.6,scale:.22,ground:.18,radius:.20},
+  'black-gate':{x:4.15,z:2.55,scale:.22,ground:.22,radius:.22,rotation:-.45}
 };

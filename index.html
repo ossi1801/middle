@@ -44,6 +44,14 @@
           <span class="title-rule"></span>
           <span class="map-caption">Mountains, memories & the roads between</span>
         </div>
+        <div class="map-search" role="search" aria-label="Search map features">
+          <div class="search-input-wrap">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input id="map-search-input" type="search" placeholder="Search places, regions, battles…" autocomplete="off" spellcheck="false" aria-label="Search places, regions, rivers and events" />
+            <button id="map-search-clear" type="button" class="search-clear" aria-label="Clear search" hidden>×</button>
+          </div>
+          <div id="map-search-dropdown" class="map-search-dropdown" hidden role="listbox"></div>
+        </div>
         <div class="compass" aria-hidden="true"><span>N</span><i></i><b></b></div>
         <div class="map-hint">DRAG TO ORBIT <span>·</span> SCROLL TO ZOOM <span>·</span> CLICK A MARKER</div>
 
@@ -67,8 +75,11 @@
           <div class="quality-control"><label for="cinematic-mode"><input id="cinematic-mode" type="checkbox" /> Enhanced models &amp; effects</label><small id="quality-status" role="status">Low-poly · effects off</small></div>
           <div class="relief-control"><label for="relief">Terrain relief <output id="relief-value">1.0×</output></label><input id="relief" type="range" min="0.3" max="2" step="0.1" value="1" /></div>
           <div class="detail-tools"><label><input id="map-details" type="checkbox" checked /> Regional detail</label><button id="explore-rohan" type="button">Explore Rohan ↗</button><button id="explore-east" type="button">Explore East ↗</button></div>
-          <button id="top-view" class="text-button view-button" type="button" aria-pressed="false" title="Look straight down; drag to pan and scroll to zoom">Top-down view ↓</button>
-          <button id="reset-view" class="text-button" type="button">Reset view <span>↗</span></button>
+          <button id="top-view" class="text-button view-button" type="button" aria-pressed="false" title="Look straight down; click again to toggle perspective view">Top-down view ↓</button>
+          <div class="view-actions">
+            <button id="reset-view" class="text-button" type="button">Reset view <span>↗</span></button>
+            <button id="fullscreen-toggle" class="text-button" type="button" aria-pressed="false" title="Toggle full screen application (F)">Full screen <span>⛶</span></button>
+          </div>
         </aside>
 
         <div id="detail-status" class="detail-status" role="status">OVERVIEW · zoom in for regional detail</div>
