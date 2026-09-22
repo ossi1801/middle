@@ -14,6 +14,7 @@ export const LANDMARK_IDS=[
 export function createLandmarks(entries, elevation) {
   const root = new THREE.Group();
   root.name = 'Atlas landmarks';
+  root.renderOrder = 10;
   const records = [];
   const factionRecords = [];
   let enhanced = false;
@@ -242,6 +243,9 @@ export function createLandmarks(entries, elevation) {
       // The Great Bridge of Osgiliath & Dome of Stars
       const bridgeStone = '#888f88';
       box(bridgeStone, 0, .08, 0, .16, .10, .54);
+      // Stone bridge piers reaching down into the riverbed so river flows under arches
+      box(bridgeStone, 0, .015, -.10, .16, .03, .06);
+      box(bridgeStone, 0, .015, .10, .16, .03, .06);
       for (const z of [-.22, .22]) {
         box('#727972', 0, .18, z, .18, .26, .14);
         cone('#555d55', 0, .34, z, .09, .10);
@@ -571,12 +575,14 @@ export function createLandmarks(entries, elevation) {
       }
       list.forEach(g => g.dispose());
       geometry.computeBoundingSphere();
-      group.add(new THREE.Mesh(
+      const mesh = new THREE.Mesh(
         geometry,
         lit
           ? new THREE.MeshBasicMaterial({vertexColors:true, side:THREE.DoubleSide})
           : new THREE.MeshStandardMaterial({vertexColors:true, roughness:.85, flatShading:!rich})
-      ));
+      );
+      mesh.renderOrder = 10;
+      group.add(mesh);
     }
     return group;
   }

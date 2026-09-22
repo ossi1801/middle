@@ -127,8 +127,8 @@ function start() {
   const plinth = new THREE.Mesh(new THREE.BoxGeometry(WIDTH,.4,DEPTH),new THREE.MeshStandardMaterial({color:0x263b35,roughness:1}));
   plinth.position.set(CENTER_X,-.72,CENTER_Z); terrainGroup.add(plinth);
 
-  const point = (x,z,offset=.065) => new THREE.Vector3(x,Math.max(0,elevation(x,z))+offset,z);
-  function surfacePath(points,offset=.07,smooth=false) {
+  const point = (x,z,offset=.008) => new THREE.Vector3(x,Math.max(0,elevation(x,z))+offset,z);
+  function surfacePath(points,offset=.008,smooth=false) {
     if(smooth) {
       const curve=new THREE.CatmullRomCurve3(points.map(([x,z])=>new THREE.Vector3(x,0,z)),false,'centripetal');
       const length=points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-points[i][0],p[1]-points[i][1]),0);
@@ -146,7 +146,7 @@ function start() {
     const end=points.at(-1); sampled.push(point(...end,offset));
     return sampled;
   }
-  function ribbon(points,color,radius,offset,smooth=false) {
+  function ribbon(points,color,radius,offset,smooth=false,order=2) {
     const samples=surfacePath(points,offset,smooth), vertices=[], indices=[];
     // Two vertices per sample instead of tube rings and CurvePath length scans.
     for(let i=0;i<samples.length;i++) {
@@ -161,14 +161,16 @@ function start() {
     }
     const mesh=new THREE.BufferGeometry();
     mesh.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));mesh.setIndex(indices);
-    return new THREE.Mesh(mesh,new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide}));
+    const m=new THREE.Mesh(mesh,new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2}));
+    m.renderOrder=order;
+    return m;
   }
   const detailMeshes=[];
   // Batch waterways by reveal tier: a whole river tier is one draw call.
-  function batchRibbons(items,color,width,offset,level,smooth=true) {
+  function batchRibbons(items,color,width,offset,level,smooth=true,order=2) {
     const positions=[],indices=[];
     for(const item of items) {
-      const strip=ribbon(item.points,color,item.width||width,offset,smooth);
+      const strip=ribbon(item.points,color,item.width||width,offset,smooth,order);
       const start=positions.length/3;
       positions.push(...strip.geometry.attributes.position.array);
       for(const index of strip.geometry.index.array) indices.push(index+start);
@@ -176,33 +178,37 @@ function start() {
     }
     const geometry=new THREE.BufferGeometry();
     geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setIndex(indices);
-    const mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide}));
+    const mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2}));
+    mesh.renderOrder=order;
     terrainGroup.add(mesh);detailMeshes.push({mesh,level});
   }
   for(let level=0;level<=2;level++) {
-    batchRibbons(rivers.filter(r=>r.level===level),0x72bbc9,.015,.055,level);
-    batchRibbons(roads.filter(r=>r.level===level),0xc0af7d,.009,.04,level);
+    batchRibbons(rivers.filter(r=>r.level===level),0x72bbc9,.015,.008,level,true,2);
+    batchRibbons(roads.filter(r=>r.level===level),0xc0af7d,.009,.010,level,true,3);
   }
   // Lakes are densely draped cartographic polygons, matching the schematic relief.
   for(const lake of lakes) {
     const vertices=[],indices=[],segments=64,rings=10;
-    vertices.push(lake.x,elevation(lake.x,lake.z)+.045,lake.z);
+    vertices.push(lake.x,elevation(lake.x,lake.z)+.010,lake.z);
     for(let ring=1;ring<=rings;ring++) for(let i=0;i<segments;i++) {
       const a=i/segments*Math.PI*2,r=ring/rings*(1+.07*Math.sin(a*5));
       const x=lake.x+Math.cos(a)*lake.rx*r,z=lake.z+Math.sin(a)*lake.rz*r;
-      vertices.push(x,elevation(x,z)+.045,z);
+      vertices.push(x,elevation(x,z)+.010,z);
       const current=1+(ring-1)*segments+i,next=1+(ring-1)*segments+(i+1)%segments;
       if(ring===1) indices.push(0,current,next);
       else indices.push(current-segments,current,next,current-segments,next,next-segments);
     }
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geometry.setIndex(indices);
-    terrainGroup.add(new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:0x397c93,side:THREE.DoubleSide})));
+    const lakeMesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:0x397c93,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2}));
+    lakeMesh.renderOrder=1;
+    terrainGroup.add(lakeMesh);
   }
   const routeGroups={};
   for(const [key,route] of Object.entries(journeys)) {
     const coords=route.points.map(id=>{const p=locations.find(p=>p.id===id);return [p.x,p.z];});
     const group=new THREE.Group();
-    group.add(ribbon(coords,route.color,.025,.12));
+    const routeMesh=ribbon(coords,route.color,.025,.012,false,4);
+    group.add(routeMesh);
     routeGroups[key]=group;
     terrainGroup.add(group);
   }
