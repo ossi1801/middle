@@ -43,7 +43,9 @@ This is an **interpretive atlas, not a canonical elevation survey**. Coordinates
 - `terrain.js`: irregular ridge paths, foothills, coast, rivers, charcoal Mordor palette and deterministic elevation sampler. East is +x; south is +z. Terrain extent is 26 × 20 map units: x = −10…16, z = −7…13. The map centre is (3, 3); sampling and camera framing use these explicit bounds.
 - `main.js`: geometry, baked surface texture, lighting, forest instances, lightweight terrain-following ribbons, marker selection, cached projected labels, camera and UI state.
 - `vendor/`: pinned Three.js modules and license.
+- `LICENSE`: MIT License.
 - `tests/data.test.mjs`: route integrity, relative geography and height-field checks.
+- `tests/landmarks.test.mjs`: procedural landmarks, geometry budgets and raycasting checks.
 
 ## Validation
 
@@ -128,3 +130,47 @@ Referencing LOTRProject map & timeline, Tolkien Gateway, and canonical Tolkien g
 - **12 Regional Areas**: Ered Mithrin (Grey Mountains), Realm of Angmar, North Downs, Westfarthing, Eastfarthing, Lossarnach, Lamedon, Pinnath Gelin, Udûn (Mordor), Lithlad (Plain of Ash), Emyn Arnen, and Ethir Anduin (Delta).
 - **4 Waterways**: Sirannon (Gate-stream of Moria), Morthond (Blackroot), Lefnui, and Ringló.
 - **7 Timeline Milestone Events**: The Siege of Barad-dûr (SA 3434–3441), Battle of the Morannon (25 March TA 3019), The Battle of Bywater (3 Nov TA 3019), Coronation of King Elessar (1 May TA 3019), The Fall of Amon Sûl (TA 1409), The Breaking of the Fellowship (26 Feb TA 3019), and The Council of Elrond (25 Oct TA 3018).
+
+## Credits and Sources
+
+Information, geographic placements, timelines, and lore compiled in this atlas were gathered from the following primary texts, cartographic references, and community resources:
+
+### Primary Literary Works
+- **J. R. R. Tolkien**:
+  - *The Hobbit*
+  - *The Lord of the Rings* (*The Fellowship of the Ring*, *The Two Towers*, *The Return of the King*, including the Appendices and Annals of the Kings and Rulers)
+  - *The Silmarillion* (edited by Christopher Tolkien)
+  - *Unfinished Tales of Númenor and Middle-earth* (edited by Christopher Tolkien)
+
+### Cartography & Lore Databases
+- **[Tolkien Gateway](https://tolkiengateway.net/)**: Extensively referenced for geographic descriptions, historical timelines, canonical naming, and reading citations. Each place and event in the atlas links directly to its corresponding Tolkien Gateway article.
+- **[LOTRProject](https://lotrproject.com/)** by Emil Johansson: Interactive map and timeline of Middle-earth, referenced for coordinate alignments, quest waypoint sequences, and historical events.
+- **[The Encyclopedia of Arda](https://www.glyphweb.com/arda/)** by Mark Fisher: Referenced for regional nomenclature, etymology, and geographical context.
+- **[Wikipedia: Geography of Middle-earth](https://en.wikipedia.org/wiki/Geography_of_Middle-earth)**: Referenced for regional overviews and schematic cartography.
+- **Karen Wynn Fonstad's *The Atlas of Middle-earth***: Cartographic inspiration for terrain relief, travel routes, and regional scale.
+
+### Technology & Typography
+- **[Three.js](https://threejs.org/)** (Ricardo Cabello / mrdoob and contributors): 3D graphics library and OrbitControls (MIT License).
+- **Google Fonts**: Cormorant Garamond by Christian Schwartz and DM Mono by Colophon Foundry.
+
+## Disclaimer
+
+This project is an unofficial, non-commercial fan work and educational atlas.
+
+The author and this project are not affiliated, associated, authorized, endorsed by, or in any way officially connected with:
+- **The Tolkien Estate Limited** or **The Tolkien Trust**
+- **Middle-earth Enterprises** (or Embracer Group)
+- **HarperCollins Publishers**
+- **Warner Bros. Entertainment Inc.** / **New Line Cinema**
+- Or any of their respective subsidiaries, affiliates, or successors.
+
+All names, places, characters, lore, and concepts related to Middle-earth and the works of J.R.R. Tolkien (including *The Hobbit*, *The Lord of the Rings*, and *The Silmarillion*) are trademarks, registered trademarks, or copyrighted property of their respective owners. Their use here is for transformative, descriptive, and educational fan purposes only.
+
+All original code, procedural algorithms, shaders, 3D implementations, and atlas design are open source and provided under the [MIT License](LICENSE).
+
+## License
+
+This software is released under the [MIT License](LICENSE). You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software code, subject to the conditions in the [LICENSE](LICENSE) file.
+
+Third-party dependencies:
+- Three.js and OrbitControls: MIT License (see `vendor/THREE-LICENSE.txt`).

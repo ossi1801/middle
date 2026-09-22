@@ -11,6 +11,7 @@ const mapElement = $('#map');
 const panel = $('#lore-panel');
 let lastSelection;
 let closeSearchDropdown = () => false;
+let clearHighlight = () => {};
 function openLore(data, origin = document.activeElement) {
   closeSearchDropdown();
   lastSelection = origin;
@@ -34,16 +35,20 @@ function openLore(data, origin = document.activeElement) {
   panel.classList.add('is-open');
   $('#close-lore').focus({preventScroll:true});
 }
-function closeLore() {
+function closeLore(restoreFocus = true) {
   panel.classList.remove('is-open');
   panel.inert = true;
-  if (lastSelection?.isConnected) lastSelection.focus({preventScroll:true});
+  clearHighlight();
+  if (restoreFocus && lastSelection?.isConnected && lastSelection !== $('#map-search-input')) {
+    lastSelection.focus({preventScroll:true});
+  }
+  lastSelection = null;
 }
-$('#close-lore').onclick = closeLore;
+$('#close-lore').onclick = () => closeLore(true);
 window.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
     if (closeSearchDropdown()) return;
-    closeLore();
+    closeLore(true);
   }
 });
 $('#location-count').textContent = atlasEntries.length;
@@ -253,10 +258,11 @@ function start() {
     button.textContent=isEvent?'✦':data.name;
     button.title=isEvent?`${data.name} · ${data.date}`:data.name;
     button.setAttribute('aria-label',isEvent?button.title:`Explore ${data.name}`);
-    button.onclick=()=>openLore(data,button);
+    button.onclick=()=>{ setHighlight(data); openLore(data,button); };
     button.addEventListener('keydown',e=>{
       if(e.key==='Enter'||e.key===' ') {
         e.preventDefault();
+        setHighlight(data);
         openLore(data,button);
       }
     });
@@ -331,13 +337,13 @@ function start() {
 
   let highlightedTarget=null;
 
-  function clearHighlight() {
+  clearHighlight = () => {
     highlightedTarget=null;
     highlightGroup.visible=false;
     for(const l of labels) l.button.classList.remove('is-highlighted');
     lastViewKey='';
     invalidate();
-  }
+  };
 
   function setHighlight(place) {
     highlightedTarget=place;
@@ -432,6 +438,9 @@ function start() {
     } else if(hits.length) {
       setHighlight(hits[0].object.userData.entry);
       openLore(hits[0].object.userData.entry,$('#place-search'));
+    } else {
+      closeLore(false);
+      clearHighlight();
     }
   });
 
@@ -474,6 +483,7 @@ function start() {
   function reset(top=false) {
     updateTopDownUI(top);
     clearHighlight();
+    closeLore(false);
     controls.enableDamping=false;
     controls.update();
     const vfov=THREE.MathUtils.degToRad(camera.fov);
@@ -489,8 +499,8 @@ function start() {
 
   $('#reset-view').onclick=()=>reset();
   $('#top-view').onclick=()=>toggleTopDown();
-  $('#explore-rohan').onclick=()=>{reset(true);focusPlace({x:.1,z:2.4,level:1});closeLore();};
-  $('#explore-east').onclick=()=>{reset(true);focusPlace({x:8,z:4.7,viewPixels:65});closeLore();};
+  $('#explore-rohan').onclick=()=>{reset(true);focusPlace({x:.1,z:2.4,level:1},false);closeLore(false);};
+  $('#explore-east').onclick=()=>{reset(true);focusPlace({x:8,z:4.7,viewPixels:65},false);closeLore(false);};
   $('#map-details').addEventListener('change',invalidate);
 
   focusPlace=(place,highlight=true)=>{
@@ -510,6 +520,8 @@ function start() {
     invalidate();
   };
   window.__focusPlace=focusPlace;
+  window.__clearHighlight=clearHighlight;
+  window.__closeLore=closeLore;
   window.__invalidate=invalidate;
 
   // Fullscreen Application Toggle
