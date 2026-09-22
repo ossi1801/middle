@@ -74,7 +74,7 @@ export function elevation(x,z) {
   // Nan Curunír is a valley below Methedras, not a ridge-top settlement.
   const isengardValley=Math.exp(-(((x+1.75)/.48)**2+((z-1.9)/.64)**2));
   const morgulVale=Math.exp(-(((x-3.98)/.35)**2+((z-4.48)/.28)**2));
-  const morannonPass=Math.exp(-(((x-4.15)/.38)**2+((z-2.55)/.30)**2));
+  const morannonPass=Math.exp(-(((x-4.15)/.45)**2+((z-2.55)/.36)**2));
   h+=mountains*(1-.96*isengardValley)*(1-.84*morgulVale)*(1-.82*morannonPass);
   h+=1.7*Math.exp(-((x-4.55)**2+(z+4.7)**2)/.13);
   const volcano=Math.hypot(x-5.35,z-3.45);
@@ -87,11 +87,12 @@ export function elevation(x,z) {
   h=h*(1-lakeBasin)+.12*lakeBasin;
   // Flat settlement footprints blend back into surrounding hills. The same field
   // feeds the mesh, texture, exports and buildings, so there are no floating pads.
+  // Use max(ground, h) so we only raise low terrain — never pull mountains down.
   for(const site of settlementSites) {
     if(Math.abs(x-site.x)>site.radius||Math.abs(z-site.z)>site.radius)continue;
     const d=Math.hypot(x-site.x,z-site.z);
     const blend=1-smooth(site.radius*.7,site.radius,d);
-    h=h*(1-blend)+site.ground*blend;
+    h=h*(1-blend)+Math.max(site.ground,h)*blend;
   }
   return h*smooth(0,.26,inland);
 }

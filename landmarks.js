@@ -20,6 +20,7 @@ export function createLandmarks(entries, elevation) {
   let enhanced = false;
   let relief = 1;
   let effects = null;
+  let smaug = null;
 
   const allEntries = entries ? [...entries, ...geographyEntries] : geographyEntries;
 
@@ -66,28 +67,198 @@ export function createLandmarks(entries, elevation) {
       box('#090e12', 0, .22, .132, .045, .15, .012);
     } else if (id === 'barad-dur' || id === 'minas-morgul') {
       const morgul = id === 'minas-morgul', body = morgul ? '#34423f' : dark;
-      cylinder(body, 0, .08, 0, .24, .32, .16);
-      cylinder(body, 0, .48, 0, .1, .2, .82);
-      for (const x of [-1, 1]) {
-        box(body, x*.2, .31, 0, .15, .5, .2);
-        cone(body, x*.2, .64, 0, .14, .3);
-      }
       if (morgul) {
+        // Minas Morgul – unchanged compact model
+        cylinder(body, 0, .08, 0, .24, .32, .16);
+        cylinder(body, 0, .48, 0, .1, .2, .82);
+        for (const x of [-1, 1]) {
+          box(body, x*.2, .31, 0, .15, .5, .2);
+          cone(body, x*.2, .64, 0, .14, .3);
+        }
         cone(body, 0, 1.03, 0, .15, .5);
         ring('#9ae6b4', 0, .7, 0, .13, .016, true);
       } else {
-        for (const x of [-1, 1]) cone(dark, x*.18, 1.17, 0, .085, .48);
-        add(new THREE.TorusGeometry(.14, .034, rich?10:4, segments), '#ff850f', 0, 1.33, 0, [1.65, .8, 1], [0, 0, 0], true);
-        add(new THREE.SphereGeometry(1, rich?16:8, rich?12:6), '#ffc04a', 0, 1.33, 0, [.16, .075, .036], [0, 0, 0], true);
-        add(new THREE.SphereGeometry(1, 8, 6), '#190704', 0, 1.33, .042, [.019, .075, .012]);
+        // ──────────────────────────────────────────
+        //  BARAD-DÛR  –  The Dark Tower of Sauron
+        //  "wall upon wall, battlement upon battlement,
+        //   black, immeasurably strong, mountain of iron,
+        //   gate of steel, tower of adamant…
+        //   cruel pinnacles and iron crown"
+        // ──────────────────────────────────────────
+        const iron = '#14171a', obsidian = '#0c0e10', steelDark = '#1e2326';
+        const grate = '#222629', ember = '#ff6611', fireGold = '#ffaa22';
+
+        // === TIER 0 – Massive fortress base / mountain-throne ===
+        // Broad, squat platform anchoring the tower into the plateau
+        cylinder(obsidian, 0, .035, 0, .36, .42, .07);
+        // Second stepped ring – battlemented curtain wall
+        cylinder(iron, 0, .09, 0, .30, .34, .06);
+        // Crenellations on outer wall
+        if (rich) {
+          for (let i = 0; i < (rich ? 16 : 8); i++) {
+            const a = i / (rich ? 16 : 8) * Math.PI * 2;
+            box(iron, Math.sin(a)*.32, .14, Math.cos(a)*.32, .04, .04, .04);
+          }
+        }
+
+        // === TIER 1 – Lower keep with massive flanking walls ===
+        cylinder(steelDark, 0, .19, 0, .24, .28, .14);
+        // Flanking curtain walls / buttresses
+        for (const x of [-1, 1]) {
+          box(dark, x*.22, .20, 0, .14, .26, .18);
+          // Stepped wall tops
+          box(iron, x*.22, .35, 0, .16, .04, .20);
+        }
+
+        // === TIER 2 – Rising tower body, octagonal shaft ===
+        cylinder(dark, 0, .42, 0, .16, .22, .34);
+        // Midway ring ledge / battlement course
+        ring(iron, 0, .30, 0, .20, .022);
+
+        // === TIER 3 – Narrowing upper tower ===
+        cylinder(obsidian, 0, .72, 0, .10, .15, .28);
+        // Upper battlement ring
+        ring(grate, 0, .60, 0, .14, .018);
+
+        // === Buttresses – angular supports bracing the shaft ===
+        for (const x of [-1, 1]) {
+          // Inner buttresses connecting to main tower
+          box(dark, x*.16, .38, 0, .06, .42, .08, [1,1,1], [0, 0, x*-.15]);
+          box(dark, 0, .38, x*.16, .08, .42, .06, [1,1,1], [x*.15, 0, 0]);
+          // Diagonal flying buttresses
+          if (rich) {
+            box(iron, x*.20, .30, x*.12, .04, .30, .04, [1,1,1], [x*.18, Math.PI/4, x*-.12]);
+            box(iron, x*.20, .30, -x*.12, .04, .30, .04, [1,1,1], [-x*.18, -Math.PI/4, x*-.12]);
+          }
+        }
+
+        // === Corner towers / flanking pinnacles on the base ===
+        for (const x of [-1, 1]) for (const z of [-1, 1]) {
+          cylinder(obsidian, x*.26, .24, z*.20, .04, .06, .36);
+          cone(iron, x*.26, .46, z*.20, .05, .14);
+        }
+
+        // === TIER 4 – Slender upper spire ===
+        cylinder(dark, 0, .98, 0, .065, .09, .26);
+        // Upper ring course
+        ring(iron, 0, .88, 0, .09, .014);
+
+        // === The Iron Crown – spiked pinnacles at the summit ===
+        // Main crown horns – two tall cruel spires flanking the Eye
+        for (const x of [-1, 1]) {
+          cone(obsidian, x*.09, 1.28, 0, .035, .40);
+          // Smaller spikes beside the horns
+          cone(iron, x*.07, 1.18, x*.04, .022, .25);
+          cone(iron, x*.06, 1.15, -x*.04, .020, .22);
+        }
+        // Front and back crown spikes
+        for (const z of [-1, 1]) {
+          cone(iron, 0, 1.20, z*.08, .025, .28);
+        }
+        // Additional small pinnacles ringing the crown
+        if (rich) {
+          for (let i = 0; i < 8; i++) {
+            const a = i / 8 * Math.PI * 2;
+            cone(grate, Math.sin(a)*.065, 1.14, Math.cos(a)*.065, .015, .16);
+          }
+        }
+
+        // === The dark gate / entrance slit ===
+        box('#090b0d', 0, .15, .285, .07, .14, .015);
+        // Secondary gate slit higher up
+        if (rich) {
+          box('#060809', 0, .50, .158, .04, .10, .012);
+        }
+
+        // ──────────────────────────────────────
+        //  THE EYE OF SAURON
+        //  "The Eye was rimmed with fire…
+        //   the black slit of its pupil opened
+        //   on a pit, a window into nothing"
+        // ──────────────────────────────────────
+        const eyeY = 1.10;
+
+        // Outer fire-ring / socket – the "rim of fire"
+        add(new THREE.TorusGeometry(.105, .028, rich?12:6, rich?32:16), '#ff5500', 0, eyeY, 0, [1.8, .95, 1], [0, 0, 0], true);
+        // Inner brighter fire ring
+        add(new THREE.TorusGeometry(.08, .016, rich?10:5, rich?28:14), '#ff8811', 0, eyeY, 0, [1.8, .95, 1], [0, 0, 0], true);
+
+        // Fiery eye – the glowing iris / sclera (almond / cat-eye shape)
+        // Horizontally elongated, vertically narrow – the lidless eye
+        add(new THREE.SphereGeometry(1, rich?24:10, rich?16:8), '#ffbb33', 0, eyeY, 0, [.155, .068, .038], [0, 0, 0], true);
+        // Hotter inner glow core
+        add(new THREE.SphereGeometry(1, rich?20:8, rich?12:6), '#ffd866', 0, eyeY, 0, [.12, .052, .042], [0, 0, 0], true);
+
+        // The black slit pupil – "a window into nothing"
+        // Tall, narrow vertical slit cutting through the eye
+        add(new THREE.SphereGeometry(1, rich?12:6, rich?10:5), '#0a0200', 0, eyeY, .044, [.018, .072, .012]);
+        // Pupil inner void – even darker, narrower
+        if (rich) {
+          add(new THREE.SphereGeometry(1, 8, 6), '#000000', 0, eyeY, .047, [.010, .058, .008]);
+        }
+
+        // Radiant glow beams emanating from the Eye
+        if (rich) {
+          // Horizontal fire-rays extending left and right
+          for (const x of [-1, 1]) {
+            box(ember, x*.18, eyeY, 0, .14, .012, .008, [1,1,1], [0, 0, 0], true);
+            box(fireGold, x*.12, eyeY, 0, .08, .006, .005, [1,1,1], [0, 0, 0], true);
+          }
+          // Vertical subtle rays
+          box('#ff4400', 0, eyeY + .06, 0, .008, .10, .006, [1,1,1], [0, 0, 0], true);
+          box('#ff4400', 0, eyeY - .06, 0, .008, .10, .006, [1,1,1], [0, 0, 0], true);
+          // Diagonal ember wisps
+          for (const r of [.4, -.4, .8, -.8]) {
+            box('#cc4400', 0, eyeY, 0, .16, .005, .005, [1,1,1], [0, 0, r], true);
+          }
+        }
       }
     } else if (id === 'mount-doom') {
+      // Mountain body
       cylinder('#34312e', 0, -.06, 0, .18, .36, .32);
+      // Inner crater basin — gives depth
+      cylinder('#1a1210', 0, .07, 0, .12, .14, .06);
+      // Crater rim cylinder
       cylinder('#f35a0b', 0, .1, 0, .15, .15, .025);
-      add(new THREE.CircleGeometry(.146, segments), '#ffac20', 0, .117, 0, [1,1,1], [-Math.PI/2, 0, 0], true);
+      // Layered lava pool — outer dim glow
+      add(new THREE.CircleGeometry(.148, segments), '#a33808', 0, .112, 0, [1,1,1], [-Math.PI/2, 0, 0], true);
+      // Layered lava pool — main bright surface
+      add(new THREE.CircleGeometry(.12, segments), '#ffac20', 0, .115, 0, [1,1,1], [-Math.PI/2, 0, 0], true);
+      // Layered lava pool — hotspot center
+      add(new THREE.CircleGeometry(.05, segments), '#ffe066', 0, .119, 0, [1,1,1], [-Math.PI/2, 0, 0], true);
+      // Dark crater rim ring
       ring('#521e13', 0, .115, 0, .19, .052);
-      for (let i = 0; i < 3; i++) {
-        add(new THREE.BoxGeometry(.025, .015, .27), '#ff6116', Math.sin(i*2.1)*.19, -.03, Math.cos(i*2.1)*.19, [1,1,1], [.55, i*2.1, 0], true);
+      // Lava streaks — 5 flows at varied angles, widths, and lengths
+      const flows = [
+        { a: 0.0,  w: .028, l: .30 },
+        { a: 1.3,  w: .020, l: .24 },
+        { a: 2.5,  w: .032, l: .28 },
+        { a: 3.8,  w: .018, l: .22 },
+        { a: 5.2,  w: .025, l: .26 },
+      ];
+      for (const f of flows) {
+        // Heat halo undercoat (wider, dimmer)
+        add(new THREE.BoxGeometry(f.w * 1.6, .012, f.l), '#8b1a04', Math.sin(f.a)*.19, -.035, Math.cos(f.a)*.19, [1,1,1], [.55, f.a, 0], true);
+        // Bright lava streak
+        add(new THREE.BoxGeometry(f.w, .015, f.l), '#ff6116', Math.sin(f.a)*.19, -.03, Math.cos(f.a)*.19, [1,1,1], [.55, f.a, 0], true);
+      }
+      if (rich) {
+        // Crater rim rubble — irregular rock blocks
+        for (let i = 0; i < 6; i++) {
+          const a = i * 1.05 + .3;
+          box('#2a2420', Math.sin(a)*.165, .11, Math.cos(a)*.165, .022 + (i%2)*.01, .025, .018);
+        }
+        // Convection cells — bright patches within the lava pool
+        for (let i = 0; i < 4; i++) {
+          const ca = i * 1.6 + .4, cr = .04 + (i%3) * .02;
+          add(new THREE.CircleGeometry(.025 + (i%2)*.012, segments), i < 2 ? '#ffcc44' : '#ff9922',
+            Math.sin(ca)*cr, .12 + i*.003, Math.cos(ca)*cr, [1,1,1], [-Math.PI/2, 0, 0], true);
+        }
+        // Secondary branching lava tongues
+        add(new THREE.BoxGeometry(.014, .012, .15), '#ff4411', Math.sin(.6)*.28, -.06, Math.cos(.6)*.28, [1,1,1], [.4, .8, .2], true);
+        add(new THREE.BoxGeometry(.012, .010, .12), '#ff5522', Math.sin(3.2)*.26, -.05, Math.cos(3.2)*.26, [1,1,1], [.5, 3.0, -.15], true);
+        // Radiated ground heat — faint large glow disc beneath mountain
+        add(new THREE.CircleGeometry(.34, segments), '#ff4400', 0, -.18, 0, [1,1,1], [-Math.PI/2, 0, 0], true);
       }
     } else if (id === 'minas-tirith') {
       for (let i = 0; i < 7; i++) cylinder(i%2 ? white : '#b9c0b8', 0, .045 + i*.072, 0, .34 - i*.037, .36 - i*.037, .073);
@@ -626,11 +797,108 @@ export function createLandmarks(entries, elevation) {
     });
   }
 
+  function makeSmaug() {
+    // ──────────────────────────────────────────
+    //  SMAUG — low-poly dragon circling Erebor
+    //  ~120 triangles, single draw call
+    // ──────────────────────────────────────────
+    const pieces = [];
+    const addPart = (geometry, color, x=0, y=0, z=0, scale=[1,1,1], rotation=[0,0,0]) => {
+      const matrix = new THREE.Matrix4().compose(
+        new THREE.Vector3(x, y, z),
+        new THREE.Quaternion().setFromEuler(new THREE.Euler(...rotation)),
+        new THREE.Vector3(...scale)
+      );
+      const g = geometry.index ? geometry.toNonIndexed() : geometry.clone();
+      geometry.dispose();
+      g.applyMatrix4(matrix);
+      const colors = new Float32Array(g.attributes.position.count * 3);
+      const c = new THREE.Color(color);
+      for (let i = 0; i < colors.length; i += 3) colors.set([c.r, c.g, c.b], i);
+      g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      pieces.push(g);
+    };
+
+    const scorch = '#8b2a0a', belly = '#c9842a', scale_ = '#a33020', dark = '#3a1510', bone = '#d4a84a';
+
+    // Body — elongated box
+    addPart(new THREE.BoxGeometry(.28, .08, .10), scorch, 0, 0, 0);
+    // Belly underside
+    addPart(new THREE.BoxGeometry(.22, .03, .08), belly, 0, -.04, 0);
+    // Neck — tapered forward
+    addPart(new THREE.BoxGeometry(.12, .06, .07), scale_, .19, .02, 0, [1,1,1], [0, 0, .2]);
+    // Head
+    addPart(new THREE.BoxGeometry(.08, .05, .06), dark, .28, .04, 0);
+    // Snout
+    addPart(new THREE.ConeGeometry(.025, .08, 4), dark, .34, .04, 0, [1,1,1], [0, 0, -Math.PI/2]);
+    // Horns
+    addPart(new THREE.ConeGeometry(.008, .04, 3), bone, .26, .09, .02, [1,1,1], [-.3, 0, 0]);
+    addPart(new THREE.ConeGeometry(.008, .04, 3), bone, .26, .09, -.02, [1,1,1], [.3, 0, 0]);
+    // Tail — long tapered section
+    addPart(new THREE.BoxGeometry(.20, .04, .05), scale_, -.22, -.01, 0, [1,1,1], [0, 0, -.1]);
+    // Tail tip — cone
+    addPart(new THREE.ConeGeometry(.02, .10, 4), dark, -.35, -.03, 0, [1,1,1], [0, 0, Math.PI/2]);
+    // Left wing — flat angled plane
+    addPart(new THREE.BoxGeometry(.22, .008, .28), scorch, -.02, .03, .18, [1,1,1], [.15, 0, 0]);
+    // Left wing tip
+    addPart(new THREE.BoxGeometry(.10, .005, .14), dark, -.06, .04, .34, [1,1,1], [.3, 0, .1]);
+    // Right wing
+    addPart(new THREE.BoxGeometry(.22, .008, .28), scorch, -.02, .03, -.18, [1,1,1], [-.15, 0, 0]);
+    // Right wing tip
+    addPart(new THREE.BoxGeometry(.10, .005, .14), dark, -.06, .04, -.34, [1,1,1], [-.3, 0, .1]);
+    // Wing membrane spars (bone struts)
+    for (const zSign of [1, -1]) {
+      addPart(new THREE.BoxGeometry(.18, .006, .006), bone, .02, .035, zSign * .22, [1,1,1], [0, 0, zSign * .08]);
+      addPart(new THREE.BoxGeometry(.12, .005, .005), bone, -.04, .04, zSign * .32, [1,1,1], [0, 0, zSign * .1]);
+    }
+    // Hind legs — small cylinders
+    addPart(new THREE.CylinderGeometry(.012, .015, .06, 4), dark, -.08, -.06, .04);
+    addPart(new THREE.CylinderGeometry(.012, .015, .06, 4), dark, -.08, -.06, -.04);
+
+    // Merge into single mesh
+    const geometry = new THREE.BufferGeometry();
+    for (const name of ['position', 'normal', 'uv', 'color']) {
+      const arrays = pieces.map(g => g.attributes[name]);
+      const size = arrays[0].itemSize;
+      const combined = new Float32Array(arrays.reduce((sum, a) => sum + a.array.length, 0));
+      let offset = 0;
+      for (const a of arrays) { combined.set(a.array, offset); offset += a.array.length; }
+      geometry.setAttribute(name, new THREE.BufferAttribute(combined, size));
+    }
+    pieces.forEach(g => g.dispose());
+    geometry.computeBoundingSphere();
+
+    const material = new THREE.MeshStandardMaterial({
+      vertexColors: true, roughness: .75, flatShading: true
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.name = 'Smaug';
+    mesh.frustumCulled = false;
+    mesh.raycast = () => {};
+
+    const group = new THREE.Group();
+    group.name = 'Smaug flight';
+    group.add(mesh);
+    group.visible = false;
+    root.add(group);
+
+    // Erebor orbit parameters
+    const ereborRec = records.find(r => r.data.id === 'erebor');
+    const cx = ereborRec ? ereborRec.site.x : 4.55;
+    const cz = ereborRec ? ereborRec.site.z : -4.04;
+    const orbitRadius = 1.8;
+    const altitude = 1.4;
+    const dragonScale = .6;
+
+    return { group, mesh, cx, cz, orbitRadius, altitude, dragonScale };
+  }
+
   function makeEffects() {
     const group = new THREE.Group();
     const count = 240;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
     const seeds = new Float32Array(count * 3);
     const c = new THREE.Color();
     for (let i = 0; i < seeds.length; i++) {
@@ -638,15 +906,26 @@ export function createLandmarks(entries, elevation) {
       seeds[i] = value - Math.floor(value);
     }
     for (let i = 0; i < count; i++) {
-      c.set(i < 150 ? '#ff8a22' : i < 200 ? '#cb6230' : '#b9ffd7');
+      // Mount-doom embers: 3 color bands (hot → cooling)
+      if (i < 50) c.set('#ffd066');        // bright yellow-white sparks
+      else if (i < 100) c.set('#ff8a22');   // orange embers (original)
+      else if (i < 150) c.set('#cc3311');   // deep red cooling embers
+      else if (i < 200) c.set('#cb6230');   // Barad-dûr
+      else c.set('#b9ffd7');                // Minas Morgul
       colors.set([c.r, c.g, c.b], i * 3);
+      // Per-particle size variation
+      sizes[i] = i < 150
+        ? (.012 + seeds[i * 3] * .012)      // mount-doom: varied 0.012–0.024
+        : (.014 + seeds[i * 3] * .006);     // others: narrower range
     }
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1).setUsage(THREE.DynamicDrawUsage));
     const material = new THREE.PointsMaterial({
       vertexColors: true,
       size: .016,
+      sizeAttenuation: true,
       transparent: true,
       opacity: .72,
       depthWrite: false,
@@ -657,7 +936,7 @@ export function createLandmarks(entries, elevation) {
     points.raycast = () => {};
     group.add(points);
     root.add(group);
-    return { group, geometry, material, positions, count, seeds };
+    return { group, geometry, material, positions, sizes, count, seeds };
   }
 
   function update(time, camera) {
@@ -703,21 +982,70 @@ export function createLandmarks(entries, elevation) {
 
     // Dynamic particle effects
     if (!effects || !enhanced) return;
+    const doomRec = records.find(rec => rec.data.id === 'mount-doom');
     for (let i = 0; i < effects.count; i++) {
       const id = i < 150 ? 'mount-doom' : i < 200 ? 'barad-dur' : 'minas-morgul';
-      const r = records.find(rec => rec.data.id === id);
+      const r = id === 'mount-doom' ? doomRec : records.find(rec => rec.data.id === id);
       if (!r) continue;
-      const age = (time * (.18 + effects.seeds[i*3] * .13) + effects.seeds[i*3+1]) % 1;
-      const angle = effects.seeds[i*3+2] * Math.PI * 2 + time * .35;
-      const radius = (id === 'mount-doom' ? .04 + age * .35 : .12 + age * .13) * (.4 + effects.seeds[i*3] * .6);
-      effects.positions.set([
-        r.site.x + Math.cos(angle) * radius * r.site.scale,
-        r.anchor.position.y + ((id === 'mount-doom' ? .15 : 1.15) + age * (id === 'mount-doom' ? .7 : .5)) * r.site.scale,
-        r.site.z + Math.sin(angle) * radius * r.site.scale
-      ], i * 3);
+      const seed0 = effects.seeds[i*3], seed1 = effects.seeds[i*3+1], seed2 = effects.seeds[i*3+2];
+      if (id === 'mount-doom') {
+        // Band-specific speed: hot (0–49) fast+narrow, orange (50–99) medium, red (100–149) slow+wide
+        const speedMul = i < 50 ? .28 : i < 100 ? .20 : .14;
+        const driftMul = i < 50 ? .25 : i < 100 ? .35 : .50;
+        const age = (time * (speedMul + seed0 * .10) + seed1) % 1;
+        // Wobble: sinusoidal perturbation on angle
+        const angle = seed2 * Math.PI * 2 + time * .35 + Math.sin(time * 2 + seed1 * 6.28) * .04;
+        const radius = (.04 + age * driftMul) * (.4 + seed0 * .6);
+        effects.positions.set([
+          r.site.x + Math.cos(angle) * radius * r.site.scale,
+          r.anchor.position.y + (.15 + age * (.5 + seed0 * .4)) * r.site.scale,
+          r.site.z + Math.sin(angle) * radius * r.site.scale
+        ], i * 3);
+        // Size fades with age — particles shrink as they rise and cool
+        effects.sizes[i] = (.012 + seed0 * .012) * (1 - age * .6);
+      } else {
+        const age = (time * (.18 + seed0 * .13) + seed1) % 1;
+        const angle = seed2 * Math.PI * 2 + time * .35;
+        const radius = (.12 + age * .13) * (.4 + seed0 * .6);
+        effects.positions.set([
+          r.site.x + Math.cos(angle) * radius * r.site.scale,
+          r.anchor.position.y + (1.15 + age * .5) * r.site.scale,
+          r.site.z + Math.sin(angle) * radius * r.site.scale
+        ], i * 3);
+      }
     }
     effects.geometry.attributes.position.needsUpdate = true;
+    effects.geometry.attributes.size.needsUpdate = true;
     effects.material.opacity = .65 + Math.sin(time * 2) * .1;
+
+    // Lava pool pulsing — modulate mount-doom glowing mesh opacity
+    if (doomRec) {
+      const active = doomRec.high || doomRec.low;
+      const glowMesh = active.children[1]; // second child is the glow-batched mesh (MeshBasicMaterial)
+      if (glowMesh && glowMesh.material && glowMesh.material.isMeshBasicMaterial) {
+        glowMesh.material.transparent = true;
+        glowMesh.material.opacity = .82 + Math.sin(time * .8) * .15;
+      }
+    }
+
+    // Smaug — circle Erebor
+    if (smaug) {
+      const orbitSpeed = .12;
+      const angle = time * orbitSpeed;
+      const x = smaug.cx + Math.cos(angle) * smaug.orbitRadius;
+      const z = smaug.cz + Math.sin(angle) * smaug.orbitRadius;
+      const bob = Math.sin(time * .6) * .15;
+      const y = smaug.altitude + bob;
+      smaug.group.position.set(x, y, z);
+      smaug.group.scale.setScalar(smaug.dragonScale);
+      // Face direction of travel (tangent to orbit) + banking roll
+      const facing = angle + Math.PI / 2;
+      smaug.group.rotation.set(
+        Math.sin(time * 1.2) * .06,   // subtle wing-flap pitch
+        -facing,                       // yaw: face along flight path
+        Math.sin(time * orbitSpeed) * .15  // bank into the turn
+      );
+    }
   }
 
   function setEnhanced(value) {
@@ -732,6 +1060,8 @@ export function createLandmarks(entries, elevation) {
     }
     if (value && !effects) effects = makeEffects();
     if (effects) effects.group.visible = value;
+    if (value && !smaug) smaug = makeSmaug();
+    if (smaug) smaug.group.visible = value;
   }
 
   function setRelief(value) {
