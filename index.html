@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111815" />
+    <title>Middle-earth / Relief Atlas</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.js",
+          "three/addons/": "./vendor/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main class="atlas-shell">
+      <header class="masthead">
+        <div class="brand-lockup">
+          <span class="eyebrow">The roads that changed an age</span>
+          <h1>Middle-earth <em>in relief</em></h1>
+        </div>
+        <div class="masthead-meta">
+          <span class="status-dot"></span>
+          <span>EXPLORER EDITION</span>
+          <span class="scale">AN INTERPRETIVE ATLAS</span>
+        </div>
+      </header>
+
+      <section class="map-stage" aria-label="Interactive 3D map of Middle-earth">
+        <div id="map" class="map-canvas"></div>
+        <div class="map-wash"></div>
+        <div id="map-labels" class="map-labels"></div>
+        <p id="map-status" role="status">Preparing the relief atlas…</p>
+        <div class="map-title">
+          <span class="eyebrow">The western lands</span>
+          <strong>Middle-earth</strong>
+          <span class="title-rule"></span>
+          <span class="map-caption">Mountains, memories & the roads between</span>
+        </div>
+        <div class="compass" aria-hidden="true"><span>N</span><i></i><b></b></div>
+        <div class="map-hint">DRAG TO ORBIT <span>·</span> SCROLL TO ZOOM <span>·</span> CLICK A MARKER</div>
+
+        <aside class="controls-panel" aria-label="Map layers">
+          <div class="panel-kicker">LAYERS / 03</div>
+          <label class="layer-toggle is-active">
+            <input type="checkbox" data-layer="frodo" checked />
+            <span class="toggle-mark"></span>
+            <span><strong>Frodo's road</strong><small>3018–3019 · Outward quest</small></span>
+          </label>
+          <label class="layer-toggle">
+            <input type="checkbox" data-layer="bilbo" />
+            <span class="toggle-mark"></span>
+            <span><strong>Bilbo's road</strong><small>2941 · The Lonely Mountain</small></span>
+          </label>
+          <label class="layer-toggle is-active">
+            <input type="checkbox" data-layer="events" checked />
+            <span class="toggle-mark"></span>
+            <span><strong>Notable events</strong><small>Battles across the ages</small></span>
+          </label>
+          <div class="quality-control"><label for="cinematic-mode"><input id="cinematic-mode" type="checkbox" /> Enhanced models &amp; effects</label><small id="quality-status" role="status">Low-poly · effects off</small></div>
+          <div class="relief-control"><label for="relief">Terrain relief <output id="relief-value">1.0×</output></label><input id="relief" type="range" min="0.3" max="2" step="0.1" value="1" /></div>
+          <div class="detail-tools"><label><input id="map-details" type="checkbox" checked /> Regional detail</label><button id="explore-rohan" type="button">Explore Rohan ↗</button><button id="explore-east" type="button">Explore East ↗</button></div>
+          <button id="top-view" class="text-button view-button" type="button" aria-pressed="false" title="Look straight down; drag to pan and scroll to zoom">Top-down view ↓</button>
+          <button id="reset-view" class="text-button" type="button">Reset view <span>↗</span></button>
+        </aside>
+
+        <div id="detail-status" class="detail-status" role="status">OVERVIEW · zoom in for regional detail</div>
+        <div class="legend" aria-label="Map legend">
+          <div><span class="legend-swatch water"></span> water</div><div><span class="legend-swatch road"></span> road</div>
+          <div><span class="legend-swatch route"></span> Frodo</div><div><span class="legend-swatch bilbo"></span> Bilbo</div>
+          <div><span class="legend-swatch event"></span> event</div>
+        </div>
+
+        <aside id="lore-panel" class="lore-panel" aria-label="Place information" inert>
+          <button id="close-lore" class="close-button" type="button" aria-label="Close place information">×</button>
+          <div class="lore-content">
+            <span id="lore-type" class="eyebrow">SELECTED PLACE</span>
+            <h2 id="lore-name">A map awaiting a traveller</h2>
+            <p id="lore-region" class="lore-region">Click a glowing marker to read its entry.</p>
+            <div class="lore-rule"></div>
+            <p id="lore-description" class="lore-description">The ridgelines are built from a stylized elevation field. Explore the roads and the stories they connect.</p>
+            <div id="lore-facts" class="lore-facts"></div>
+            <p id="lore-reading" class="reading-reference"></p>
+            <a id="lore-source" target="_blank" rel="noopener noreferrer">Read more at Tolkien Gateway ↗</a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="place-index" aria-label="Place index"><div><span class="eyebrow">A traveller’s companion</span><h2>Every place has a story.</h2><p>Follow a road, or find your own way into the lore.</p><label for="place-search">Find a place, river or region</label><input id="place-search" type="search" placeholder="Try Rohan, Snowbourn…" /><span id="search-count" role="status"></span></div><div id="place-results" class="place-results"></div></section>
+      <details class="atlas-notes"><summary>About this atlas & sources</summary><p>An original, schematic interpretation of northwestern Middle-earth. Heights are procedural and exaggerated; positions and routes are approximate. Routes show selected milestones on the outward quests, not return journeys. Underground passages are drawn on the surface. Earlier battles are shown on a late Third Age landscape.</p><p>Geography: <a href="https://en.wikipedia.org/wiki/Geography_of_Middle-earth" target="_blank" rel="noopener noreferrer">Wikipedia</a> · <a href="https://tolkiengateway.net/wiki/Portal:Maps" target="_blank" rel="noopener noreferrer">Tolkien Gateway maps</a>. Stories: J. R. R. Tolkien’s <i>The Hobbit</i> and <i>The Lord of the Rings</i>. Each entry includes further reading. Unofficial fan project.</p><button id="export-heightmap" type="button" class="text-button">Download heightmap PNG ↓</button></details>
+      <footer class="footer-bar">
+        <span><b id="location-count">10</b> atlas entries</span>
+        <span class="footer-note">A living reference atlas · terrain is an interpretive study</span>
+        <span>UPDATED <b>3019 T.A.</b></span>
+      </footer>
+    </main>
+    <noscript><p class="no-script">Enable JavaScript to explore the 3D atlas. Reading references are available in README.md.</p></noscript>
+    <script type="module">import("./main.js").catch(() => { document.querySelector("#map-status").textContent = "The atlas could not load. Serve this folder over HTTP (python3 -m http.server 8000) and reload."; });</script>
+  </body>
+</html>

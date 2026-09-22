@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import * as THREE from '../vendor/three.module.js';
+import {createLandmarks,LANDMARK_IDS} from '../landmarks.js';
+import {locations} from '../data.js';
+import {elevation} from '../terrain.js';
+const landmarks=createLandmarks(locations,elevation);
+assert.equal(landmarks.records.length,LANDMARK_IDS.length);
+assert.equal(landmarks.enhanced,false);
+assert.ok(landmarks.records.every(r=>r.low.visible&&r.high===null),'Rich geometry is lazy');
+const triangles=group=>{let n=0;group.traverse(o=>{if(o.isMesh)n+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;});return n;};
+const low=triangles(landmarks.root);assert.ok(low<12000,`Low triangle budget exceeded: ${low}`);
+landmarks.setEnhanced(true);
+const high=landmarks.records.reduce((n,r)=>n+triangles(r.high),0);assert.ok(high>low,'Enhanced models add geometric detail');
+const richObjects=landmarks.root.children.length;
+landmarks.setEnhanced(false);assert.ok(landmarks.records.every(r=>r.low.visible&&!r.high.visible));
+landmarks.setEnhanced(true);assert.equal(landmarks.root.children.length,richObjects,'Toggling reuses effect resources');
+for(const r of landmarks.records){
+  const bounds=new THREE.Box3().setFromObject(r.anchor),size=bounds.getSize(new THREE.Vector3());
+  if(r.data.id!=='mount-doom')assert.ok(size.y<.4,`${r.data.id} must be smaller than the mountains`);
+  if(r.site.ground!==undefined)assert.ok(Math.abs(elevation(r.site.x,r.site.z)-r.site.ground)<1e-6,'Settlement is grounded on its terrain footprint');
+}
+const erebor=landmarks.records.find(r=>r.data.id==='erebor');
+assert.ok(erebor.site.z>erebor.data.z+.5,'Erebor gate is on the southern foot');
+assert.ok(elevation(erebor.site.x,erebor.site.z)<elevation(erebor.data.x,erebor.data.z)*.3);
+landmarks.setRelief(1.8);
+for(const r of landmarks.records)assert.ok(Math.abs(r.anchor.position.y-(elevation(r.site.x,r.site.z)-(r.site.inset||0))*1.8)<1e-6);
+const camera=new THREE.PerspectiveCamera();camera.position.set(0,8,8);landmarks.update(12,camera);
+landmarks.root.traverse(o=>{if(o.geometry)assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));});
+landmarks.setEnhanced(false);landmarks.root.updateMatrixWorld(true);
+const orthanc=landmarks.records.find(r=>r.data.id==='isengard');
+const raycaster=new THREE.Raycaster(new THREE.Vector3(orthanc.data.x,orthanc.anchor.position.y+.5*orthanc.site.scale,orthanc.data.z+.45),new THREE.Vector3(0,0,-1));
+assert.equal(landmarks.pick(raycaster)?.data.id,'isengard','Model geometry selects its lore');
+landmarks.dispose();assert.equal(landmarks.root.parent,null);
+console.log(`PASS: 9 selectable landmarks, ${low} low-poly triangles / ${high} enhanced triangles, lazy effects, relief anchoring and resource reuse`);
