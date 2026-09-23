@@ -1,7 +1,7 @@
 import { LANDMARK_SITES } from './landmark-sites.js';
 const settlementSites=Object.values(LANDMARK_SITES).filter(site=>site.ground!==undefined);
 // Deterministic, reference-inspired relief. Map units are not surveyed metres.
-export const BOUNDS = { minX:-10, maxX:16, minZ:-7, maxZ:13 };
+export const BOUNDS = { minX:-10, maxX:16, minZ:-10, maxZ:13 };
 export const WIDTH=BOUNDS.maxX-BOUNDS.minX, DEPTH=BOUNDS.maxZ-BOUNDS.minZ;
 export const CENTER_X=(BOUNDS.minX+BOUNDS.maxX)/2, CENTER_Z=(BOUNDS.minZ+BOUNDS.maxZ)/2;
 const clamp = (v, lo=0, hi=1) => Math.max(lo, Math.min(hi, v));
@@ -25,14 +25,13 @@ const ridges = [
   {points:[[4.12,2.58],[4.43,3.25],[4.36,4.35],[4.55,5.35],[4.65,6.8],[4.95,8.0]], width:.29, height:.96},
   {points:[[4.12,2.58],[5.4,2.23],[6.7,2.32],[8.2,2.2],[10.1,2.55],[12.6,2.7]], width:.32, height:.98},
   {points:[[4.95,8.0],[6.6,8.24],[8.6,8.04],[10.7,7.8],[12.25,7.5]], width:.29, height:.8},
-  {points:[[-8,-6],[-7.8,-4.3],[-8.25,-3.0]], width:.34, height:.86},
+  {points:[[-8.6,-7.6],[-8.2,-6.6],[-7.8,-4.3],[-8.25,-3.0]], width:.34, height:.86}, // Blue Mountains North
   {points:[[-7.75,-1.85],[-7.4,-.9],[-7.35,.0]], width:.28, height:.66},
-  {points:[[-1.1,-5.8],[.5,-5.7],[1.8,-5.95],[3.15,-5.65],[4,-5.8]], width:.34, height:.88},
-  {points:[[-6.8,-6.3],[-5.2,-6.15],[-3.5,-6.2],[-1.8,-5.95],[-1.1,-6]], width:.38, height:1.05}, // Mountains of Angmar / Northern barrier
-  {points:[[4,-5.8],[5.8,-5.7],[7.6,-5.6],[9.8,-5.5],[12.0,-5.5],[14.2,-5.4]], width:.36, height:.95}, // Northern waste barrier / Ered Mithrin east
-  {points:[[14.2,-5.4],[14.0,-3.8],[13.8,-2.2],[13.7,-0.5]], width:.42, height:1.15}, // Northern Orocarni
-  {points:[[13.7,-0.5],[14.1,1.8],[14.4,4.2],[14.2,6.5],[14.5,8.5],[14.2,10.2]], width:.45, height:1.20}, // Southern Orocarni
-  {points:[[-4.7,3.6],[-4.3,4.3],[-3.8,5.0],[-4.2,5.6],[-4.8,6.0],[-5.3,6.2]], width:.33, height:.75}, // Pinnath Gelin & Andrast
+  {points:[[-1.1,-5.8],[.5,-5.7],[1.8,-5.95],[3.15,-5.65],[4.4,-5.5],[5.4,-5.2]], width:.34, height:.88}, // Ered Mithrin (ends before Iron Hills)
+  {points:[[-1.1,-5.8],[-2.4,-6.5],[-3.8,-7.2],[-4.6,-7.7]], width:.36, height:.95}, // Mountains of Angmar
+  {points:[[13.5,-1.8],[13.9,-0.3],[14.3,1.4],[14.4,3.2]], width:.42, height:1.15}, // Orocarni (Red Mountains)
+  {points:[[14.1,4.9],[14.6,5.3],[14.2,5.7]], width:.32, height:.65}, // Mountains of the East spur
+  {points:[[-4.7,3.6],[-4.4,4.2],[-3.9,4.8],[-4.3,5.2],[-4.8,5.4]], width:.33, height:.75}, // Pinnath Gelin & Andrast
   {points:[[5.5,0.3],[6.2,0.7],[7.0,1.0],[7.4,1.4]], width:.34, height:.58}, // Hills of Rhûn
   {points:[[4.4,4.3],[4.8,4.8],[5.6,5.2],[6.6,5.4],[7.4,5.3]], width:.28, height:.72} // The Morgai / Gorgoroth-Nurn divide
 ];
@@ -115,15 +114,16 @@ export function terrainColor(x,z,h) {
   const eastForest=Math.exp(-(((x-12.8)/1.2)**4)-(((z-1.2)/2.2)**4));
   color=mix(color,[30,55,34],eastForest*.65);
   // Arctic tundra & northern frozen waste
-  const arctic=smooth(4.5,6.2,-z);
+  const arctic=smooth(4.5,7.5,-z);
   color=mix(color,[198,214,220],arctic*.88);
   // Rock & crags
   color=mix(color,[105,109,99],smooth(.37-arctic*.15,1.02,h));
-  // Eastern Red Mountains (Orocarni) reddish stone
-  const easternMontane=smooth(12.6,14.0,x)*smooth(.32,1.1,h);
+  // Eastern Red Mountains (Orocarni) reddish stone, localized to Orocarni latitudes
+  const orocarniLat=smooth(-2.4,-1.2,z)*(1-smooth(3.5,4.5,z));
+  const easternMontane=smooth(12.6,14.0,x)*smooth(.32,1.1,h)*orocarniLat;
   color=mix(color,[152,78,64],easternMontane*.82);
   // Snowline: lower altitude in northern cold; high in the temperate east
-  const snowThresh=.95-arctic*.62 + smooth(12.6,14.2,x)*.45;
+  const snowThresh=.95-arctic*.62 + smooth(12.6,14.2,x)*.45*orocarniLat;
   color=mix(color,[228,236,242],smooth(snowThresh,snowThresh+.45,h));
   // Apply Mordor LAST so elevation never turns its mountains grassy or snowy.
   const ash=mix([19,22,24],[58,57,57],smooth(.15,1.5,h));

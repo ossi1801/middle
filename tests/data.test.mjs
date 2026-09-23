@@ -106,17 +106,22 @@ for (const [x, z] of lowerAnduin) {
 for (const id of ['orocarni', 'forodwaith', 'hills-of-rhun', 'morgai', 'dorwinion', 'andrast']) {
   assert.ok(find(id), `Expected area ${id} to exist`);
 }
-assert.ok(elevation(-3.5, -6.2) > 0.8, 'Mountains of Angmar / Northern barrier has relief');
-assert.ok(elevation(9.8, -5.5) > 0.6, 'Northern waste barrier east has relief');
-assert.ok(elevation(14.0, 1.8) > 0.8, 'Orocarni (Red Mountains) has relief');
-assert.ok(elevation(-4.2, 5.6) > 0.5, 'Pinnath Gelin and Andrast highlands have relief');
+assert.ok(BOUNDS.minZ <= -9, 'Map bounds expanded north to reveal Forodwaith');
+assert.ok(elevation(-3.8, -7.2) > 0.6, 'Mountains of Angmar curve northwest with relief');
+assert.ok(elevation(5.4, -5.2) > 0.6, 'Ered Mithrin has relief in the north');
+assert.ok(elevation(6.2, -5.2) < 0.45, 'Ered Mithrin terminates before Iron Hills, leaving open valley');
+assert.ok(elevation(11.5, -5.5) < 0.35, 'Northeast waste is open plains, not a continuous mountain wall');
+assert.ok(elevation(14.1, 1.4) > 0.8, 'Orocarni (Red Mountains) has relief in central east');
+assert.ok(elevation(14.0, -4.0) < 0.35, 'Orocarni does not extend to the far northeast');
+assert.ok(elevation(14.2, 9.0) < 0.35, 'Orocarni does not extend to the southeast border near Khand');
+assert.ok(elevation(-4.3, 5.2) > 0.4, 'Pinnath Gelin and Andrast highlands have relief');
 assert.ok(elevation(6.5, 0.85) > 0.4, 'Hills of Rhûn have relief');
 assert.ok(elevation(5.6, 5.2) > 0.5, 'The Morgai / dividing ridge inside Mordor has relief');
 
-const forodRgb = terrainColor(1, -6.5, elevation(1, -6.5));
-assert.ok(forodRgb[0] > 170 && forodRgb[1] > 190 && forodRgb[2] > 190, 'Forodwaith has pale arctic tundra palette');
+const forodRgb = terrainColor(1, -8.0, elevation(1, -8.0));
+assert.ok(forodRgb[0] > 170 && forodRgb[1] > 185 && forodRgb[2] > 185, 'Forodwaith has pale arctic tundra palette');
 
-const orocarniRgb = terrainColor(13.8, 1.8, elevation(13.8, 1.8));
+const orocarniRgb = terrainColor(14.1, 1.4, elevation(14.1, 1.4));
 assert.ok(orocarniRgb[0] > orocarniRgb[2] + 40, 'Orocarni rock has reddish montane color');
 
 console.log('PASS: expanded canonical Middle-earth places, areas, waterways, relief, and satellite biomes');

@@ -97,11 +97,11 @@ export const localAreas=[
   entry('emyn-arnen','Emyn Arnen',3.3,4.7,'Hills','Central Ithilien','The Hills of Arnen in Ithilien, home to the line of the Stewards. Seat of Prince Faramir after the war.','Emyn_Arnen'),
   entry('ethir-anduin','Ethir Anduin',-.1,6.8,'River mouths / Delta','Bay of Belfalas · Gondor','The broad delta where the Anduin divides into many channels and flows out into the Bay of Belfalas.','Ethir_Anduin'),
   entry('orocarni','Orocarni',13.8,1.2,'Mountain range','Eastern lands','The Red Mountains of the far East, running north to south along the eastern border of Middle-earth.','Orocarni',0),
-  entry('forodwaith','Forodwaith',1.0,-6.35,'Frozen waste','Far North','The immense frozen northern lands beyond the Grey Mountains and Mountains of Angmar, where bitter cold lingered from Morgoth’s ancient realm.','Forodwaith',0),
+  entry('forodwaith','Forodwaith',1.0,-7.8,'Frozen waste','Far North','The immense frozen northern lands beyond the Grey Mountains and Mountains of Angmar, where bitter cold lingered from Morgoth’s ancient realm.','Forodwaith',0),
   entry('hills-of-rhun','Hills of Rhûn',6.5,0.85,'Hills','Rhûn','The rugged hill country southwest of the Sea of Rhûn, bordering the steppes of the East.','Hills_of_Rh%C3%BBn',1),
   entry('morgai','The Morgai',4.9,4.9,'Mountain ridge','Mordor','The inner ridge of the Mountains of Shadow that divides the desolate plateau of Gorgoroth from the lower basin of Nurn.','Morgai',1),
   entry('dorwinion','Dorwinion',6.2,-1.3,'Region','Rhovanion · Sea of Rhûn','A fertile realm northwest of the Sea of Rhûn, celebrated across Wilderland for its rich vineyards and strong wine.','Dorwinion',1),
-  entry('andrast','Andrast',-4.8,5.7,'Peninsula','Southwestern Gondor','The mountainous peninsula of southwestern Gondor, also called Ras Morthil, extending out into the Great Sea.','Andrast',1)
+  entry('andrast','Andrast',-4.6,5.3,'Peninsula','Southwestern Gondor','The mountainous peninsula of southwestern Gondor, also called Ras Morthil, extending out into the Great Sea.','Andrast',1)
 ].map(area=>({...area,area:true}));
 const river=(id,name,region,points,description,level=1,article=name,joins)=>({
   ...entry(id,name,...points[Math.floor(points.length/2)],'River',region,description,article,level),points,joins,width:level===0?.024:.014
