@@ -7,7 +7,7 @@ export const LANDMARK_SITES={
   'mount-doom':{x:5.35,z:3.45,scale:.55,inset:.045,tier:0},
   'minas-tirith':{x:2.65,z:4.35,scale:.22,ground:.38,radius:.38,tier:0},
   'minas-morgul':{x:3.98,z:4.48,scale:.18,ground:.20,radius:.22,tier:0},
-  'erebor':{x:4.55,z:-4.04,scale:.27,ground:.24,radius:.20,tier:0},
+  'erebor':{x:4.55,z:-3.32,scale:.27,ground:.24,radius:.20,tier:0},
   'black-gate':{x:4.15,z:2.55,scale:.22,ground:.22,radius:.32,rotation:-2.0,tier:0},
   'osgiliath':{x:2.9,z:4.1,scale:.24,radius:.22,tier:0},
 

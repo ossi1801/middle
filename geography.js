@@ -26,7 +26,7 @@ export const localPlaces=[
   entry('last-bridge','Last Bridge',-3.05,-3.06,'Bridge','Eriador · Hoarwell','The East Road crosses the Hoarwell here, west of the Trollshaws.','Last Bridge',2),
   entry('ford-bruinen','Ford of Bruinen',-2.03,-3.04,'River crossing','Eriador · Rivendell','Floodwaters swept away the pursuing Nazgûl as Frodo reached the border of Elrond’s refuge.','Ford of Bruinen',2),
   entry('tharbad','Tharbad',-3.65,.15,'Ruined crossing','Eriador · Greyflood','A once-important settlement at the crossing of the Greyflood. Boromir lost his horse while passing here.'),
-  entry('dale','Dale',4.64,-4.35,'City','Rhovanion · Erebor','The town south of the Lonely Mountain was destroyed by Smaug and rebuilt under Bard after the dragon’s death.'),
+  entry('dale','Dale',4.62,-3.55,'City','Rhovanion · Erebor','The town south of the Lonely Mountain was destroyed by Smaug and rebuilt under Bard after the dragon’s death.'),
   entry('carrock','Carrock',.4,-3.62,'River rock','Rhovanion · Anduin','A great rock in the Anduin near Beorn’s lands. The Eagles brought Bilbo and the dwarves here.','Carrock',2),
   entry('dol-guldur','Dol Guldur',2.0,-.46,'Fortress','Southern Mirkwood','Sauron occupied this stronghold as the Necromancer before openly returning to Mordor.'),
   entry('gladden-fields','Gladden Fields',.68,-1.72,'Wetlands','Rhovanion · Anduin','Isildur was ambushed in this region after the Last Alliance. The Ring was lost in the Anduin nearby.'),
@@ -57,7 +57,7 @@ export const localPlaces=[
   entry('withered-heath','Withered Heath',6.3,-5.1,'Highland valley','Ered Mithrin · Grey Mountains','A desolate plateau in the eastern Grey Mountains, known as the breeding ground of the great dragons.','Withered_Heath',1)
 ];
 export const localAreas=[
-  entry('iron-hills','Iron Hills',8.3,-4.7,'Hill country','Eastern Rhovanion','Dwarven country east of Erebor. Dáin Ironfoot led warriors from here to the Battle of Five Armies.','Iron Hills',0),
+  entry('iron-hills','Iron Hills',10.2,-4.5,'Hill country','Eastern Rhovanion','Dwarven country east of Erebor. Dáin Ironfoot led warriors from here to the Battle of Five Armies.','Iron Hills',0),
   entry('rhun-region','Rhûn',11.45,-.4,'Region','Eastern lands','The broad eastern lands beyond Rhovanion. Their full extent is not mapped in this atlas.','Rhûn',0),
   entry('nurn','Nurn',7.0,6.9,'Region','Southern Mordor','The fields around Lake Núrnen supplied Sauron’s armies through the labour of enslaved people.','Nurn',0),
   entry('south-gondor','South Gondor',3.22,7.0,'Borderland','Harondor · between Poros and Harnen','The country between the Poros and Harnen was disputed between Gondor and the peoples of Harad.','South Gondor',0),
@@ -101,7 +101,9 @@ export const localAreas=[
   entry('hills-of-rhun','Hills of Rhûn',6.5,0.85,'Hills','Rhûn','The rugged hill country southwest of the Sea of Rhûn, bordering the steppes of the East.','Hills_of_Rh%C3%BBn',1),
   entry('morgai','The Morgai',4.9,4.9,'Mountain ridge','Mordor','The inner ridge of the Mountains of Shadow that divides the desolate plateau of Gorgoroth from the lower basin of Nurn.','Morgai',1),
   entry('dorwinion','Dorwinion',6.2,-1.3,'Region','Rhovanion · Sea of Rhûn','A fertile realm northwest of the Sea of Rhûn, celebrated across Wilderland for its rich vineyards and strong wine.','Dorwinion',1),
-  entry('andrast','Andrast',-4.6,5.3,'Peninsula','Southwestern Gondor','The mountainous peninsula of southwestern Gondor, also called Ras Morthil, extending out into the Great Sea.','Andrast',1)
+  entry('andrast','Andrast',-4.6,5.3,'Peninsula','Southwestern Gondor','The mountainous peninsula of southwestern Gondor, also called Ras Morthil, extending out into the Great Sea.','Andrast',1),
+  entry('rhun-forest','Forest of Rhûn',8.15,-0.65,'Woodland','Rhûn','A small ancient woodland on the northeastern shore of the Sea of Rhûn, depicted on canonical maps of the East.','Sea_of_Rh%C3%BBn',1),
+  entry('wild-wood','The Wild Wood',12.6,1.2,'Ancient forest','Palisor · Western Orocarni','The vast primeval woodland beneath the western eaves of the Orocarni (Red Mountains), surrounding the waters of Cuiviénen where the Elves first awoke.','Cuivi%C3%A9nen',0)
 ].map(area=>({...area,area:true}));
 const river=(id,name,region,points,description,level=1,article=name,joins)=>({
   ...entry(id,name,...points[Math.floor(points.length/2)],'River',region,description,article,level),points,joins,width:level===0?.024:.014
@@ -113,7 +115,7 @@ export const rivers=[
   {...river('nurnen-east','Unnamed river · eastern Nurn','Mordor',[[9.7,3.35],[10.25,4.4],[9.6,5.3],[8.82,5.97]],'A second unnamed feeder from the spur of the Ash Mountains. Its course here is approximate.',1,'Sea of Núrnen'),joinsLake:'nurnen'},
   river('harnen','Harnen','Harad / South Gondor',[[4.9,8],[4.1,8.25],[2.8,8.37],[1.4,8.43],[.1,8.5]],'The Harnen runs west towards the sea, separating South Gondor from Near Harad.',0,'Harnen'),
   river('poros','Poros','Gondor / South Gondor',[[4.59,5.6],[4,5.75],[3.08,5.96],[1.62,5.78]],'The Poros forms the northern boundary of South Gondor and flows into the lower Anduin.',1,'Poros','anduin'),
-  river('carnen','Carnen','Eastern Rhovanion',[[8.1,-4.6],[7.85,-3.7],[7.45,-2.76],[6.7,-1.84],[5.8,-1.3]],'The Redwater flows south from the Iron Hills to join the Running River.',0,'Carnen','running'),
+  river('carnen','Carnen','Eastern Rhovanion',[[9.8,-4.4],[8.8,-3.6],[7.8,-2.7],[6.7,-1.84],[5.8,-1.3]],'The Redwater flows south from the Iron Hills to join the Running River.',0,'Carnen','running'),
   river('morgulduin','Morgulduin','Ithilien',[[4.22,4.46],[3.98,4.48],[3.51,4.37],[3.18,4.31],[2.98,4.45]],'The stream of the Morgul Vale descends from Minas Morgul towards the Anduin.',1,'Morgulduin','anduin'),
   river('anduin','Anduin','Rhovanion / Gondor',[[.1,-5.4],[.28,-4.4],[.45,-3.7],[.58,-2.7],[.75,-2.1],[.82,-1.4],[.9,-.3],[1.14,.4],[1.4,.8],[1.4,1.13],[1.65,1.75],[1.76,1.98],[2,2.8],[2.24,3.2],[2.5,3.55],[2.9,4.1],[2.98,4.45],[2.85,4.7],[2.55,4.96],[2.2,5.2],[1.62,5.78],[.8,6.3],[-.55,6.65]],'The Great River links the northern vales with Gondor, passing Lórien, Rauros and the fields below Minas Tirith.',0),
   river('brandywine','Brandywine','The Shire / Eriador',[[-6.22,-4.18],[-6,-3.72],[-5.85,-3.1],[-5.78,-2.55],[-5.75,-2],[-5.9,-1.23],[-5.8,-.5],[-6.4,.8],[-7.45,1.3]],'The river Baranduin runs south from Lake Evendim past the eastern edge of the Shire.',0),
@@ -121,8 +123,8 @@ export const rivers=[
   river('bruinen','Bruinen','Eriador',[[-1.48,-3.95],[-1.65,-3.47],[-2.03,-3.04],[-2.3,-2.25],[-3.08,-1.25]],'The Loudwater guards the approaches to Rivendell and joins the Hoarwell.',1,'Bruinen','hoarwell'),
   river('glanduin','Glanduin','Eregion',[[-1.12,-.87],[-1.85,-.48],[-2.5,-.35],[-3.65,.15]],'The southern river of Eregion joins the Hoarwell at the beginning of the Greyflood.',1,'Glanduin','greyflood'),
   river('greyflood','Greyflood','Eriador',[[-3.65,.15],[-4.33,.7],[-5.15,1.03],[-5.84,1.74],[-7.15,2.5]],'The combined waters flow southwest past Tharbad towards the sea.',0),
-  river('running','Running River','Rhovanion',[[4.55,-4.5],[4.72,-3.75],[4.72,-3.2],[4.78,-2.65],[5.1,-2],[5.8,-1.3],[6.8,-.8]],'The Celduin flows from Erebor through Long Lake towards the Sea of Rhûn.',0,'Celduin'),
-  river('forest-river','Forest River','Northern Mirkwood',[[1.1,-4.85],[1.94,-4.4],[2.8,-4.3],[3.6,-3.85],[4.13,-3.62],[4.72,-3.2]],'Bilbo’s barrel escape followed this river from the Elvenking’s halls towards Long Lake.',1,'Forest River','running'),
+  river('running','Running River','Rhovanion',[[4.55,-3.7],[4.62,-3.5],[4.68,-2.95],[4.65,-2.6],[4.75,-2.25],[5.1,-1.8],[5.8,-1.3],[6.8,-.8]],'The Celduin flows from Erebor through Long Lake towards the Sea of Rhûn.',0,'Celduin'),
+  river('forest-river','Forest River','Northern Mirkwood',[[1.1,-4.85],[1.94,-4.4],[2.8,-4.3],[3.6,-3.85],[4.15,-3.2],[4.65,-2.6]],'Bilbo’s barrel escape followed this river from the Elvenking’s halls towards Long Lake.',1,'Forest River','running'),
   river('isen','Isen','Rohan / Enedwaith',[[-1.7,1.9],[-1.93,2.12],[-2.1,2.5],[-3.2,2.65],[-4.2,2.45],[-5.25,2.68],[-7.1,2.7]],'The western river of Rohan runs past Isengard and the Fords of Isen towards the sea.',0),
   river('adorn','Adorn','Rohan · West-march',[[-2.73,3.38],[-2.9,3.07],[-3.24,2.94],[-3.2,2.65]],'The Adorn joins the Isen and bounds the West-march to the south.',1,'Adorn','isen'),
   river('entwash','Entwash','Rohan',[[-.98,1.05],[-.6,1.2],[.1,1.45],[.48,1.68],[.56,2.1],[.65,2.65],[.78,3.02],[1.19,3.08],[1.68,2.94],[2,2.8]],'From Fangorn, the Entwash crosses Rohan, receives the Snowbourn and divides into a delta at the Anduin.',0,'Entwash','anduin'),
@@ -141,7 +143,7 @@ export const rivers=[
 ];
 export const lakes=[
   {...entry('nurnen','Sea of Núrnen',8.0,6.12,'Inland sea','Nurn · Southern Mordor','A dark inland sea surrounded by the cultivated lands of Nurn. After Sauron’s defeat, Aragorn gave those lands to the freed slaves.','Sea of Núrnen',0),aliases:['Sea of Nurnen','Nurnen','Lake Nurnen'],rx:1.18,rz:.55},
-  {...entry('long-lake','Long Lake',4.72,-3.2,'Lake','Rhovanion','Lake-town stands on this lake south of Erebor, fed by the Running and Forest Rivers.'),rx:.24,rz:.56},
+  {...entry('long-lake','Long Lake',4.7,-2.6,'Lake','Rhovanion','Lake-town stands on this lake south of Erebor, fed by the Running and Forest Rivers.'),rx:.14,rz:.32},
   {...entry('nen-hithoel','Nen Hithoel',1.6,1.56,'Lake','Anduin · Emyn Muil','A lake between the Argonath and the Falls of Rauros. The Fellowship made its last camp on the western shore.','Nen Hithoel'),rx:.21,rz:.39},
   {...entry('evendim','Lake Evendim',-6.27,-4.48,'Lake','Eriador','Nenuial lies north of the Shire. The Brandywine flows from it; Annúminas stood on its shore.','Lake Evendim'),rx:.33,rz:.48},
   {...entry('rhun','Sea of Rhûn',7,-.56,'Inland sea','Rhûn','The great inland sea east of Rhovanion receives the waters of the Celduin.','Sea of Rhûn',0),rx:.66,rz:.46},

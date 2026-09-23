@@ -18,9 +18,11 @@ export function noise(x,z) {
   return (a+(b-a)*u)*(1-v)+(c+(d-c)*u)*v;
 }
 const ridges = [
-  {points:[[7.0,-4.95],[8.05,-4.6],[9,-4.8],[10.05,-4.32]],width:.55,height:.66}, // Iron Hills
+  {points:[[9.2,-4.8],[10.0,-4.5],[10.9,-4.6],[11.8,-4.25]],width:.55,height:.66}, // Iron Hills (shifted east)
   {points:[[10.1,2.55],[9.7,3.35],[9,4.25],[8.55,4.95]],width:.26,height:.8}, // interior Mordor spur
-  {points:[[-1.1,-6],[-.72,-4.7],[-.8,-3.8],[-.48,-2.5],[-.65,-1.6],[-.95,-.4],[-1.15,.8],[-1.4,1.35]], width:.43, height:1.35},
+  {points:[[-1.1,-6],[-.72,-4.7],[-.8,-3.8],[-.48,-2.5],[-.65,-1.6],[-.95,-.4],[-1.15,.8],[-1.4,1.35],[-1.3,1.75],[-1.25,2.05]], width:.43, height:1.35}, // Misty Mountains
+  {points:[[-1.5,1.25],[-2.15,1.5],[-2.25,1.85]], width:.32, height:.95}, // Nan Curunír western arm
+  {points:[[-2.7,3.15],[-2.1,3.0],[-1.6,3.15],[-1.1,3.35]], width:.32, height:1.0}, // Thrihyrne & northern White Mountains
   {points:[[-4.7,3.6],[-3.7,3.28],[-2.8,3.35],[-1.7,3.58],[-.5,3.65],[.2,3.82],[.8,3.95],[1.4,4.08],[1.85,4.2],[2.15,4.28]], width:.36, height:1.12},
   {points:[[4.12,2.58],[4.43,3.25],[4.36,4.35],[4.55,5.35],[4.65,6.8],[4.95,8.0]], width:.29, height:.96},
   {points:[[4.12,2.58],[5.4,2.23],[6.7,2.32],[8.2,2.2],[10.1,2.55],[12.6,2.7]], width:.32, height:.98},
@@ -82,7 +84,7 @@ export function elevation(x,z) {
   const morgulVale=Math.exp(-(((x-3.98)/.35)**2+((z-4.48)/.28)**2));
   const morannonPass=Math.exp(-(((x-4.15)/.45)**2+((z-2.55)/.36)**2));
   h+=mountains*(1-.96*isengardValley)*(1-.84*morgulVale)*(1-.82*morannonPass);
-  h+=1.7*Math.exp(-((x-4.55)**2+(z+4.7)**2)/.13);
+  h+=1.7*Math.exp(-((x-4.55)**2+(z+3.9)**2)/.13);
   const volcano=Math.hypot(x-5.35,z-3.45);
   h+=1.12*Math.exp(-((volcano/.36)**2))-.3*Math.exp(-((volcano/.10)**2));
   h+=.18*Math.exp(-((x-2.4)**2+(z-1.7)**2)/.65)*(.5+detail);
@@ -111,6 +113,8 @@ export function terrainColor(x,z,h) {
   color=mix(color,[161,137,87],dry*.85);
   const forest=Math.exp(-(((x-2.25)/1.05)**4)-(((z+2.65)/2.4)**4));
   color=mix(color,[35,61,39],forest*.7);
+  const rhunForest=Math.exp(-(((x-8.15)/.45)**4)-(((z+0.65)/.35)**4));
+  color=mix(color,[32,58,36],rhunForest*.7);
   const eastForest=Math.exp(-(((x-12.8)/1.2)**4)-(((z-1.2)/2.2)**4));
   color=mix(color,[30,55,34],eastForest*.65);
   // Arctic tundra & northern frozen waste

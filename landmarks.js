@@ -885,7 +885,7 @@ export function createLandmarks(entries, elevation) {
     // Erebor orbit parameters
     const ereborRec = records.find(r => r.data.id === 'erebor');
     const cx = ereborRec ? ereborRec.site.x : 4.55;
-    const cz = ereborRec ? ereborRec.site.z : -4.04;
+    const cz = ereborRec ? ereborRec.site.z : -3.32;
     const orbitRadius = 1.8;
     const altitude = 1.4;
     const dragonScale = .6;

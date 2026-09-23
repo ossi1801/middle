@@ -221,7 +221,14 @@ function start() {
   let seed=37;
   const random=()=> { seed=(seed*1664525+1013904223)>>>0; return seed/4294967296; };
   const trees=[];
-  for(const [cx,cz,rx,rz,count] of [[2.25,-2.65,1.1,2.3,290],[.15,1.2,.7,.5,65],[.25,-.3,.55,.45,45],[-5.5,-1.9,.28,.35,20]]) {
+  for(const [cx,cz,rx,rz,count] of [
+    [2.25,-2.65,1.1,2.3,290], // Mirkwood
+    [.15,1.2,.7,.5,65], // Fangorn
+    [.25,-.3,.55,.45,45], // Lothlórien
+    [-5.5,-1.9,.28,.35,20], // Old Forest
+    [8.15,-0.65,0.42,0.32,35], // Forest of Rhûn
+    [12.8,1.2,0.95,1.9,130] // Wild Wood / Western Orocarni
+  ]) {
     for(let i=0;i<count;i++) {
       const angle=random()*Math.PI*2,r=Math.sqrt(random());
       const x=cx+Math.cos(angle)*r*rx,z=cz+Math.sin(angle)*r*rz;

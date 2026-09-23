@@ -19,7 +19,7 @@ assert.ok(p('lothlorien').x>p('moria').x && p('lothlorien').z>p('rivendell').z);
 assert.ok(p('erebor').z<p('lake-town').z);
 assert.ok(p('mount-doom').x>p('minas-tirith').x);
 assert.ok(elevation(-.8,-4)>.6,'Misty Mountains have relief');
-assert.ok(elevation(4.55,-4.7)>1.5,'Erebor is a distinct peak');
+assert.ok(elevation(p('erebor').x,p('erebor').z)>1.5,'Erebor is a distinct peak');
 assert.ok(elevation(-9,2)<0,'Western ocean lies below sea level');
 const samples=sampleHeightmap(128);
 assert.equal(samples.length,128*128);
@@ -103,7 +103,7 @@ for (const [x, z] of lowerAnduin) {
 }
 
 // Verifications for satellite-aligned relief and geographic additions
-for (const id of ['orocarni', 'forodwaith', 'hills-of-rhun', 'morgai', 'dorwinion', 'andrast']) {
+for (const id of ['orocarni', 'forodwaith', 'hills-of-rhun', 'morgai', 'dorwinion', 'andrast', 'rhun-forest', 'wild-wood']) {
   assert.ok(find(id), `Expected area ${id} to exist`);
 }
 assert.ok(BOUNDS.minZ <= -9, 'Map bounds expanded north to reveal Forodwaith');
@@ -111,6 +111,13 @@ assert.ok(elevation(-3.8, -7.2) > 0.6, 'Mountains of Angmar curve northwest with
 assert.ok(elevation(5.4, -5.2) > 0.6, 'Ered Mithrin has relief in the north');
 assert.ok(elevation(6.2, -5.2) < 0.45, 'Ered Mithrin terminates before Iron Hills, leaving open valley');
 assert.ok(elevation(11.5, -5.5) < 0.35, 'Northeast waste is open plains, not a continuous mountain wall');
+assert.ok(find('iron-hills').x - find('withered-heath').x > 2.0, 'Iron Hills have wide separation east of Withered Heath');
+const longLake = find('long-lake');
+assert.ok(longLake.rx <= 0.16 && longLake.rz <= 0.35, 'Long Lake is smaller and scaled realistically');
+assert.ok(longLake.z > -3.0 && p('erebor').z > -4.2, 'Long Lake and Erebor are positioned further south');
+assert.ok(elevation(-1.3, 1.75) > 0.45, 'Misty Mountains extend south east of Nan Curunír');
+assert.ok(elevation(-2.1, 3.0) > 0.5, 'Northern White Mountains rise south of the Gap of Rohan');
+assert.ok(elevation(-2.25, 1.7) > 0.4, 'Nan Curunír western arm flanks Isengard');
 assert.ok(elevation(14.1, 1.4) > 0.8, 'Orocarni (Red Mountains) has relief in central east');
 assert.ok(elevation(14.0, -4.0) < 0.35, 'Orocarni does not extend to the far northeast');
 assert.ok(elevation(14.2, 9.0) < 0.35, 'Orocarni does not extend to the southeast border near Khand');
