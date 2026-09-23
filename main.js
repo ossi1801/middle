@@ -738,7 +738,8 @@ function start() {
   };
   function measureLabels(){ lastViewKey='';for(const label of labels) label.width=label.button.offsetWidth||80; }
   function resize(){const w=mapElement.clientWidth,h=mapElement.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);measureLabels();invalidate();}
-  resize();reset();
+  const initialTop = new URLSearchParams(window.location.search).get('top') === '1';
+  resize();reset(initialTop);
   new ResizeObserver(()=>{resize();if(topDown)reset(true);}).observe(mapElement);
   document.fonts.ready.then(()=>{measureLabels();invalidate();});
   function suspendAnimation(){clearTimeout(animationTimer);cancelAnimationFrame(frame);frame=0;}

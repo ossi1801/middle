@@ -45,7 +45,7 @@ export const localPlaces=[
   entry('field-celebrant','Field of Celebrant',.9,.1,'Historic battlefield','Between Silverlode and Limlight','Here Eorl the Young led the Éothéod in relief of Gondor in TA 2510, earning the land of Calenardhon that became Rohan.','Field_of_Celebrant',1),
   entry('cair-andros','Cair Andros',2.5,3.55,'Fortified island','Anduin · Gondor','An island shaped like a great ship that guarded the river passage above Osgiliath against crossings from the east.','Cair_Andros',0),
   entry('pelennor-fields','Pelennor Fields',2.75,4.45,'Plain & battlefield','Anórien · Minas Tirith','The townlands of Minas Tirith within the Rammas Echor wall. Scene of the battle where the Witch-king fell.','Pelennor_Fields',1),
-  entry('harlond-gondor','Harlond',2.7,4.65,'River haven','Anduin · Pelennor','The quays of Minas Tirith on the Anduin, where Aragorn landed the captured black fleet to turn the battle.','Harlond_(Gondor)',2),
+  entry('harlond-gondor','Harlond',2.8,4.68,'River haven','Anduin · Pelennor','The quays of Minas Tirith on the Anduin, where Aragorn landed the captured black fleet to turn the battle.','Harlond_(Gondor)',2),
   entry('paths-dead','Paths of the Dead',-.45,3.65,'Haunted passage','White Mountains · Dwimorberg','A dark road beneath the mountains. Aragorn passed through to summon the Oathbreakers at the Stone of Erech.','Paths_of_the_Dead',2),
   entry('erech','Stone of Erech',-.65,4.35,'Black stone monument','Blackroot Vale · Morthond','A massive black stone brought from Númenor by Isildur, where the King of the Mountains swore and broke his oath.','Stone_of_Erech',1),
   entry('calembel','Calembel',.15,4.95,'Settlement','Lamedon · Gondor','The chief town of Lamedon on the river Ciril, passed by Aragorn and the Grey Company as they hurried to Pelargir.','Calembel',1),
@@ -95,7 +95,13 @@ export const localAreas=[
   entry('udun-mordor','Udûn',4.45,2.8,'Valley','Northern Mordor','The deep circular valley behind the Black Gate, where Sauron’s armies massed before passing through the Morannon.','Udûn_(Mordor)'),
   entry('lithlad','Lithlad',8.8,4.8,'Plain of Ash','Southeastern Mordor','The vast Plain of Ash in southern Mordor, west of Khand and north of the cultivated plains of Nurn.','Lithlad',0),
   entry('emyn-arnen','Emyn Arnen',3.3,4.7,'Hills','Central Ithilien','The Hills of Arnen in Ithilien, home to the line of the Stewards. Seat of Prince Faramir after the war.','Emyn_Arnen'),
-  entry('ethir-anduin','Ethir Anduin',-.1,6.8,'River mouths / Delta','Bay of Belfalas · Gondor','The broad delta where the Anduin divides into many channels and flows out into the Bay of Belfalas.','Ethir_Anduin')
+  entry('ethir-anduin','Ethir Anduin',-.1,6.8,'River mouths / Delta','Bay of Belfalas · Gondor','The broad delta where the Anduin divides into many channels and flows out into the Bay of Belfalas.','Ethir_Anduin'),
+  entry('orocarni','Orocarni',13.8,1.2,'Mountain range','Eastern lands','The Red Mountains of the far East, running north to south along the eastern border of Middle-earth.','Orocarni',0),
+  entry('forodwaith','Forodwaith',1.0,-6.35,'Frozen waste','Far North','The immense frozen northern lands beyond the Grey Mountains and Mountains of Angmar, where bitter cold lingered from Morgoth’s ancient realm.','Forodwaith',0),
+  entry('hills-of-rhun','Hills of Rhûn',6.5,0.85,'Hills','Rhûn','The rugged hill country southwest of the Sea of Rhûn, bordering the steppes of the East.','Hills_of_Rh%C3%BBn',1),
+  entry('morgai','The Morgai',4.9,4.9,'Mountain ridge','Mordor','The inner ridge of the Mountains of Shadow that divides the desolate plateau of Gorgoroth from the lower basin of Nurn.','Morgai',1),
+  entry('dorwinion','Dorwinion',6.2,-1.3,'Region','Rhovanion · Sea of Rhûn','A fertile realm northwest of the Sea of Rhûn, celebrated across Wilderland for its rich vineyards and strong wine.','Dorwinion',1),
+  entry('andrast','Andrast',-4.8,5.7,'Peninsula','Southwestern Gondor','The mountainous peninsula of southwestern Gondor, also called Ras Morthil, extending out into the Great Sea.','Andrast',1)
 ].map(area=>({...area,area:true}));
 const river=(id,name,region,points,description,level=1,article=name,joins)=>({
   ...entry(id,name,...points[Math.floor(points.length/2)],'River',region,description,article,level),points,joins,width:level===0?.024:.014
@@ -108,8 +114,8 @@ export const rivers=[
   river('harnen','Harnen','Harad / South Gondor',[[4.9,8],[4.1,8.25],[2.8,8.37],[1.4,8.43],[.1,8.5]],'The Harnen runs west towards the sea, separating South Gondor from Near Harad.',0,'Harnen'),
   river('poros','Poros','Gondor / South Gondor',[[4.59,5.6],[4,5.75],[3.08,5.96],[1.62,5.78]],'The Poros forms the northern boundary of South Gondor and flows into the lower Anduin.',1,'Poros','anduin'),
   river('carnen','Carnen','Eastern Rhovanion',[[8.1,-4.6],[7.85,-3.7],[7.45,-2.76],[6.7,-1.84],[5.8,-1.3]],'The Redwater flows south from the Iron Hills to join the Running River.',0,'Carnen','running'),
-  river('morgulduin','Morgulduin','Ithilien',[[4.22,4.46],[3.98,4.48],[3.51,4.37],[3.18,4.31],[2.55,4.55]],'The stream of the Morgul Vale descends from Minas Morgul towards the Anduin.',1,'Morgulduin','anduin'),
-  river('anduin','Anduin','Rhovanion / Gondor',[[.1,-5.4],[.28,-4.4],[.45,-3.7],[.58,-2.7],[.75,-2.1],[.82,-1.4],[.9,-.3],[1.14,.4],[1.4,.8],[1.4,1.13],[1.65,1.75],[1.76,1.98],[2,2.8],[2.24,3.2],[2.9,4.1],[2.55,4.55],[2.2,5.2],[1.62,5.78],[.8,6.3],[-.55,6.65]],'The Great River links the northern vales with Gondor, passing Lórien, Rauros and the fields below Minas Tirith.',0),
+  river('morgulduin','Morgulduin','Ithilien',[[4.22,4.46],[3.98,4.48],[3.51,4.37],[3.18,4.31],[2.98,4.45]],'The stream of the Morgul Vale descends from Minas Morgul towards the Anduin.',1,'Morgulduin','anduin'),
+  river('anduin','Anduin','Rhovanion / Gondor',[[.1,-5.4],[.28,-4.4],[.45,-3.7],[.58,-2.7],[.75,-2.1],[.82,-1.4],[.9,-.3],[1.14,.4],[1.4,.8],[1.4,1.13],[1.65,1.75],[1.76,1.98],[2,2.8],[2.24,3.2],[2.5,3.55],[2.9,4.1],[2.98,4.45],[2.85,4.7],[2.55,4.96],[2.2,5.2],[1.62,5.78],[.8,6.3],[-.55,6.65]],'The Great River links the northern vales with Gondor, passing Lórien, Rauros and the fields below Minas Tirith.',0),
   river('brandywine','Brandywine','The Shire / Eriador',[[-6.22,-4.18],[-6,-3.72],[-5.85,-3.1],[-5.78,-2.55],[-5.75,-2],[-5.9,-1.23],[-5.8,-.5],[-6.4,.8],[-7.45,1.3]],'The river Baranduin runs south from Lake Evendim past the eastern edge of the Shire.',0),
   river('hoarwell','Hoarwell','Eriador',[[-2.45,-4.7],[-2.82,-4],[-3.05,-3.06],[-2.87,-2.27],[-3.08,-1.25],[-3.65,.15]],'The Hoarwell passes beneath the Last Bridge and receives the Bruinen before the waters reach the Greyflood.',1,'Hoarwell','greyflood'),
   river('bruinen','Bruinen','Eriador',[[-1.48,-3.95],[-1.65,-3.47],[-2.03,-3.04],[-2.3,-2.25],[-3.08,-1.25]],'The Loudwater guards the approaches to Rivendell and joins the Hoarwell.',1,'Bruinen','hoarwell'),

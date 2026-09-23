@@ -96,4 +96,28 @@ assert.ok(find('annuminas').x < find('fornost').x, 'Annúminas is west of Fornos
 assert.ok(find('carn-dum').z < -5, 'Carn Dûm is in the far north of Angmar');
 assert.ok(find('withered-heath').x > find('ered-mithrin').x, 'Withered Heath is east of Ered Mithrin center');
 assert.ok(Math.hypot(find('pelennor-fields').x - find('minas-tirith').x, find('pelennor-fields').z - find('minas-tirith').z) < .5, 'Pelennor Fields is adjacent to Minas Tirith');
-console.log('PASS: expanded canonical Middle-earth places, areas, waterways and historical events');
+assert.ok(elevation(2.15, 4.28) > 0.8, 'Mount Mindolluin rises west of Minas Tirith');
+const lowerAnduin = rivers.find(r => r.id === 'anduin').points.filter(([x, z]) => z >= 3.2);
+for (const [x, z] of lowerAnduin) {
+  assert.ok(elevation(x, z) < 0.42, `Lower Anduin at (${x}, ${z}) flows through river valley without crossing mountain ridges (elev=${elevation(x, z)})`);
+}
+
+// Verifications for satellite-aligned relief and geographic additions
+for (const id of ['orocarni', 'forodwaith', 'hills-of-rhun', 'morgai', 'dorwinion', 'andrast']) {
+  assert.ok(find(id), `Expected area ${id} to exist`);
+}
+assert.ok(elevation(-3.5, -6.2) > 0.8, 'Mountains of Angmar / Northern barrier has relief');
+assert.ok(elevation(9.8, -5.5) > 0.6, 'Northern waste barrier east has relief');
+assert.ok(elevation(14.0, 1.8) > 0.8, 'Orocarni (Red Mountains) has relief');
+assert.ok(elevation(-4.2, 5.6) > 0.5, 'Pinnath Gelin and Andrast highlands have relief');
+assert.ok(elevation(6.5, 0.85) > 0.4, 'Hills of Rhûn have relief');
+assert.ok(elevation(5.6, 5.2) > 0.5, 'The Morgai / dividing ridge inside Mordor has relief');
+
+const forodRgb = terrainColor(1, -6.5, elevation(1, -6.5));
+assert.ok(forodRgb[0] > 170 && forodRgb[1] > 190 && forodRgb[2] > 190, 'Forodwaith has pale arctic tundra palette');
+
+const orocarniRgb = terrainColor(13.8, 1.8, elevation(13.8, 1.8));
+assert.ok(orocarniRgb[0] > orocarniRgb[2] + 40, 'Orocarni rock has reddish montane color');
+
+console.log('PASS: expanded canonical Middle-earth places, areas, waterways, relief, and satellite biomes');
+
